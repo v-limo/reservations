@@ -1,4 +1,4 @@
-namespace Model;
+namespace BookReservation.API.Models;
 
 public class BaseEntity
 {
