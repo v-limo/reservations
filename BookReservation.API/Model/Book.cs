@@ -1,10 +1,13 @@
-namespace BookReservation.API.Models;
+using System.ComponentModel.DataAnnotations;
 
-
+namespace BookReservation.API.Model;
 public class Book : BaseEntity
 {
-  public string Title { get; set; }
-  public string Author { get; set; }
+  [Required(ErrorMessage = "Book Title is required")]
+  [MinLength(2)]
+
+  public string Title { get; set; } = string.Empty;
+  public string? Author { get; set; }
   public bool IsReserved { get; set; }
-  public string ReservationComment { get; set; }
+  public string? ReservationComment { get; set; }
 }
