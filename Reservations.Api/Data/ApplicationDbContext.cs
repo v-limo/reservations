@@ -3,7 +3,7 @@ using Reservations.API.Model;
 
 namespace Reservations.Api.Data;
 
-class ApplicationDbContext : DbContext
+public class ApplicationDbContext : DbContext
 {
   public DbSet<Book> Books { get; set; }
 

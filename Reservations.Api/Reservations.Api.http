@@ -1,4 +1,4 @@
-@Reservations.Api_HostAddress = http://localhost:5165
+@Reservations.Api_HostAddress = http://localhost:5099
 
 GET {{Reservations.Api_HostAddress}}/weatherforecast/
 Accept: application/json
