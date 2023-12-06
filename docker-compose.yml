@@ -1,0 +1,25 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: "3.4"
+
+services:
+  reservationsapi:
+    image: reservationsapi
+    build:
+      context: .
+      dockerfile: Reservations.Api/Dockerfile
+    ports:
+      - 5165:5165
+    depends_on:
+      - reservationsapidb
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=reservationDB;User=sa; Trusted_Connection=True; Password=MyVeryStrongPassword123!;
+
+  reservationsapidb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - MSSQL_SA_PASSWORD=MyVeryStrongPassword123!
+      - ACCEPT_EULA="Y"
+
+    ports:
+      - 1433:1433
