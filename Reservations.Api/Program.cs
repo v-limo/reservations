@@ -1,8 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Reservations.Api.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+string? connectionString;
+connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 
 // Add services to the container.
-
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
