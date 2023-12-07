@@ -36,11 +36,23 @@ services:
     environment:
       - POSTGRES_PASSWORD=MyVeryStrongPassword123!
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=reservationsDB
+      - POSTGRES_DB=reservationDB
     ports:
       - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=adminpassword
+    ports:
+      - 8080:80
+    depends_on:
+      - db-postgres
     networks:
       - mynetwork
 

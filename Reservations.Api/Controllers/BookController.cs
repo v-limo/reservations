@@ -13,7 +13,7 @@ namespace Reservations.Api.Controllers;
 
 public class BookController(IBookService bookService) : ControllerBase
 {
-  [HttpGet]
+    [HttpGet]
   [ProducesResponseType(StatusCodes.Status200OK)]
   public async Task<IEnumerable<BookDto>> GetBooks()
   {
