@@ -7,15 +7,14 @@ using Reservations.Api.Services.Interfaces;
 // using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var postgresCoonection = builder.Configuration.GetConnectionString("PostgresConnection");
+var DefaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+var PostgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
 
 
 // Add services to the container.
-// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(DefaultConnection));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresCoonection)
-);
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(PostgresConnection));
 
 builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -40,7 +39,7 @@ if (true) //TODO: enanble swagger only in dev
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
