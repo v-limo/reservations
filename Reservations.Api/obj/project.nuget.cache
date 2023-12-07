@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "/AC2/hVGtyilDUNd2ydEF4ZUwIZnNgdpkrSnFtezT41QDFqXKBjPkHwJHUIryj/lIQ5axhoQxi8WbrwxGPCSiw==",
+  "dgSpecHash": "YpdN0zaqdNPrYybSzvZMoWujhAC7b4x8SyIYXzKIPkaIAp9rrPKueL5eKlc+HJcUIvL/fMGsU6bBt8C5ccQj2g==",
   "success": true,
   "projectFilePath": "/Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/Reservations.Api.csproj",
   "expectedPackageFiles": [
@@ -50,6 +50,8 @@
     "/Users/vincentlimo/.nuget/packages/microsoft.sqlserver.server/1.0.0/microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "/Users/vincentlimo/.nuget/packages/microsoft.win32.systemevents/6.0.0/microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "/Users/vincentlimo/.nuget/packages/mono.texttemplating/2.2.1/mono.texttemplating.2.2.1.nupkg.sha512",
+    "/Users/vincentlimo/.nuget/packages/npgsql/8.0.0/npgsql.8.0.0.nupkg.sha512",
+    "/Users/vincentlimo/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.0/npgsql.entityframeworkcore.postgresql.8.0.0.nupkg.sha512",
     "/Users/vincentlimo/.nuget/packages/swashbuckle.aspnetcore/6.4.0/swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "/Users/vincentlimo/.nuget/packages/swashbuckle.aspnetcore.swagger/6.4.0/swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
     "/Users/vincentlimo/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.4.0/swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
