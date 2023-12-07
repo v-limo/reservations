@@ -64,6 +64,10 @@ ILogger<BookService> logger
       if (existingBook == null)
         return null;
 
+      // TODO: check if book is reserved and if so, do not allow update
+      // TODO: update updatedat field to current datetime
+      // TODO: Do we allow  to update 
+
       mapper.Map(updateDto, existingBook);
       dbContext.Entry(existingBook).State = EntityState.Modified;
       await dbContext.SaveChangesAsync();
@@ -100,7 +104,7 @@ ILogger<BookService> logger
     try
     {
       var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
-      if (book == null)
+      if (book == null || book.IsReserved)
         return null;
 
       book.IsReserved = true;

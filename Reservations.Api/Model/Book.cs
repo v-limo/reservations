@@ -10,4 +10,5 @@ public class Book : BaseEntity
   public string? Author { get; set; } = string.Empty;
   public bool IsReserved { get; set; }
   public string? ReservationComment { get; set; }
+  public ICollection<History>? History { get; set; }
 }
