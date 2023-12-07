@@ -2,6 +2,10 @@
 
 version: "3.4"
 
+networks:
+  mynetwork:
+    driver: bridge
+
 services:
   reservationsapi:
     image: reservationsapi
@@ -11,11 +15,14 @@ services:
     ports:
       - 5165:5165
     depends_on:
-      - reservationsapidb
-    environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=reservationDB;User=sa; Trusted_Connection=True; Password=MyVeryStrongPassword123!;
+      - db-sqlserver
+      - db-postgres
 
-  reservationsapidb:
+
+    networks:
+      - mynetwork
+
+  db-sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - MSSQL_SA_PASSWORD=MyVeryStrongPassword123!
@@ -23,3 +30,19 @@ services:
 
     ports:
       - 1433:1433
+
+  db-postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=MyVeryStrongPassword123!
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=reservationsDB
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+volumes:
+  postgres-data:
