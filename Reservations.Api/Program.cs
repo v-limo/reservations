@@ -1,21 +1,23 @@
 using Microsoft.EntityFrameworkCore;
 using Reservations.Api.Data;
+using Reservations.Api.Middleware;
 using Reservations.Api.Profiles;
 using Reservations.Api.Services.Implementation;
 using Reservations.Api.Services.Interfaces;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
+// using Npgsql.EntityFrameworkCore.PostgreSQL;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var postgresCoonection = builder.Configuration.GetConnectionString("PostgresConnection");
 
 
-
 // Add services to the container.
 // builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresCoonection));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresCoonection)
+);
 
+builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddScoped<IBookService, BookService>();
@@ -43,5 +45,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.Run();

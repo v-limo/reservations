@@ -3,7 +3,7 @@
 version: "3.4"
 
 networks:
-  mynetwork:
+  apinetwork:
     driver: bridge
 
 services:
@@ -20,7 +20,7 @@ services:
 
 
     networks:
-      - mynetwork
+      - apinetwork
 
   db-sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -36,25 +36,13 @@ services:
     environment:
       - POSTGRES_PASSWORD=MyVeryStrongPassword123!
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=reservationDB
+      - POSTGRES_DB=bookdb
     ports:
       - 5432:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-dat:/var/lib/postgresql/data
     networks:
-      - mynetwork
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@example.com
-      - PGADMIN_DEFAULT_PASSWORD=adminpassword
-    ports:
-      - 8080:80
-    depends_on:
-      - db-postgres
-    networks:
-      - mynetwork
+      - apinetwork
 
 volumes:
-  postgres-data:
+  postgres-dat:
