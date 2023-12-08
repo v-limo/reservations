@@ -1,169 +1,204 @@
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Reservations.API.DTO;
-using Reservations.API.Model;
-using Reservations.Api.Data;
-using Reservations.Api.Services.Interfaces;
-
 namespace Reservations.Api.Services.Implementation;
 
-public class BookService(ApplicationDbContext dbContext, IMapper mapper,
+public class BookService(
+ApplicationDbContext dbContext,
+IMapper mapper,
 ILogger<BookService> logger
-
 ) : IBookService
 {
-  public async Task<IEnumerable<BookDto>> GetAllAsync()
-  {
-    try
+    public async Task<IEnumerable<BookDto>> GetAllAsync()
     {
-      var books = await dbContext.Books.ToListAsync();
-      return mapper.Map<IEnumerable<BookDto>>(books);
+        try
+        {
+            var books = await dbContext.Books.ToListAsync();
+            return mapper.Map<IEnumerable<BookDto>>(books);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting all books");
+            throw;
+        }
     }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while getting all books");
-      throw;
-    }
-  }
 
-  public async Task<BookDto> GetByIdAsync(int id)
-  {
-    try
+    public async Task<BookDto> GetByIdAsync(int id)
     {
-      var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
-      return mapper.Map<BookDto>(book);
+        try
+        {
+            var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            return mapper.Map<BookDto>(book);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting book by id");
+            throw;
+        }
     }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while getting book by id");
-      throw;
-    }
-  }
 
-  public async Task<BookDto> CreateAsync(BookDto createDto)
-  {
-    try
+    public async Task<BookDto> CreateAsync(CreateBookDto createDto)
     {
-      var book = mapper.Map<Book>(createDto);
-      dbContext.Books.Add(book);
-      await dbContext.SaveChangesAsync();
-      return mapper.Map<BookDto>(book);
+        try
+        {
+            var book = mapper.Map<Book>(createDto);
+            dbContext.Books.Add(book);
+            await dbContext.SaveChangesAsync();
+            return mapper.Map<BookDto>(book);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while creating book");
+            throw;
+        }
     }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while creating book");
-      throw;
-    }
-  }
 
-  public async Task<BookDto?> UpdateAsync(int id, BookDto updateDto)
-  {
-    try
+    public async Task<BookDto?> UpdateAsync(int id, UpdateBookDto updateDto)
     {
-      var existingBook = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
-      if (existingBook == null)
-        return null;
+        try
+        {
+            var existingBook = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingBook == null)
+                return null;
 
-      // TODO: check if book is reserved and if so, do not allow update
-      // TODO: update updatedat field to current datetime
-      // TODO: Do we allow  to update 
 
-      mapper.Map(updateDto, existingBook);
-      dbContext.Entry(existingBook).State = EntityState.Modified;
-      await dbContext.SaveChangesAsync();
-      return mapper.Map<BookDto>(existingBook);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while updating book");
-      throw;
-    }
-  }
 
-  public async Task<bool> DeleteAsync(int id)
-  {
-    try
-    {
-      var existingBook = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
-      if (existingBook == null)
-        return false;
+            existingBook.UpdatedAt = DateTime.UtcNow; //manual time update, because we don't want to allow user to update this field
+            mapper.Map(updateDto, existingBook);
+            dbContext.Entry(existingBook).State = EntityState.Modified;
+            await dbContext.SaveChangesAsync();
+            return mapper.Map<BookDto>(existingBook);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while updating book");
+            throw;
+        }
+    }
 
-      dbContext.Books.Remove(existingBook);
-      await dbContext.SaveChangesAsync();
-      return true;
-    }
-    catch (Exception ex)
+    public async Task<bool> DeleteAsync(int id)
     {
-      logger.LogError(ex, "Error while deleting book");
-      throw;
-    }
-  }
+        try
+        {
+            var existingBook = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingBook == null)
+                return false;
 
-  public async Task<BookDto?> ReserveBookAsync(int bookId, string comment)
-  {
-    try
-    {
-      var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
-      if (book == null || book.IsReserved)
-        return null;
 
-      book.IsReserved = true;
-      book.ReservationComment = comment;
-      await dbContext.SaveChangesAsync();
-      return mapper.Map<BookDto>(book);
+            // TODO: Add delete logic for related entities
+            dbContext.Books.Remove(existingBook);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while deleting book");
+            throw;
+        }
     }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while reserving book");
-      throw;
-    }
-  }
 
-  public async Task<bool> RemoveReservationAsync(int bookId)
-  {
-    try
+    public async Task<BookDto?> ReserveBookAsync(int bookId, string comment)
     {
-      var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
-      if (book == null)
-        return false;
+        try
+        {
+            var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
+            if (book == null || book.IsReserved)
+                return null;
 
-      book.IsReserved = false;
-      book.ReservationComment = null;
-      await dbContext.SaveChangesAsync();
-      return true;
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while removing reservation");
-      throw;
-    }
-  }
+            book.IsReserved = true;
+            book.ReservationComment = comment;
 
-  public async Task<IEnumerable<BookDto>> GetReservedBooksAsync()
-  {
-    try
-    {
-      var books = await dbContext.Books.Where(x => x.IsReserved).ToListAsync();
-      return mapper.Map<IEnumerable<BookDto>>(books);
-    }
-    catch (Exception ex)
-    {
-      logger.LogError(ex, "Error while getting reserved books");
-      throw;
-    }
-  }
+            var history = new ReservationHistory
+            {
+                Comment = comment,
+                BookId = book.Id,
+                Book = book,
+            };
 
-  public async Task<IEnumerable<BookDto>> GetAvailableBooksAsync()
-  {
-    try
-    {
-      var availableBooks = await dbContext.Books.Where(x => !x.IsReserved).ToListAsync();
-      return mapper.Map<IEnumerable<BookDto>>(availableBooks);
+            await dbContext.ReservationHistory.AddAsync(history);
+
+            book.ReservationHistories.Add(history);
+            await dbContext.SaveChangesAsync();
+            return mapper.Map<BookDto>(book);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while reserving book");
+            throw;
+        }
     }
-    catch (Exception ex)
+
+    public async Task<bool> RemoveReservationAsync(int bookId)
     {
-      logger.LogError(ex, "Error while getting available books");
-      throw;
+        try
+        {
+            var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
+            if (book == null)
+                return false;
+
+            book.IsReserved = false;
+            book.ReservationComment = null;
+
+            var history = new ReservationHistory
+            {
+                Comment = "Reservation for ${book.Id} removed",
+                BookId = book.Id,
+                Book = book,
+                Event = ReservationAction.Remove
+            };
+
+            await dbContext.ReservationHistory.AddAsync(history);
+
+            book.ReservationHistories.Add(history);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while removing reservation");
+            throw;
+        }
     }
-  }
+
+    public async Task<IEnumerable<BookDto>> GetReservedBooksAsync()
+    {
+        try
+        {
+            var books = await dbContext.Books.Where(x => x.IsReserved).ToListAsync();
+            return mapper.Map<IEnumerable<BookDto>>(books);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting reserved books");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<BookDto>> GetAvailableBooksAsync()
+    {
+        try
+        {
+            var availableBooks = await dbContext.Books.Where(x => !x.IsReserved).ToListAsync();
+            return mapper.Map<IEnumerable<BookDto>>(availableBooks);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting available books");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId)
+    {
+
+        try
+        {
+            var histories = await dbContext.ReservationHistory.Where(x => x.BookId == bookId).ToListAsync();
+            return mapper.Map<IEnumerable<ReservationHistoryDto>>(histories);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting book histories");
+            throw;
+        }
+
+
+    }
 }

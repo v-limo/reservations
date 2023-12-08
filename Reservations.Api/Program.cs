@@ -1,10 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using Reservations.Api.Data;
-using Reservations.Api.Middleware;
-using Reservations.Api.Profiles;
-using Reservations.Api.Services.Implementation;
-using Reservations.Api.Services.Interfaces;
-// using Npgsql.EntityFrameworkCore.PostgreSQL;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var DefaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
