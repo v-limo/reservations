@@ -1,8 +1,8 @@
+namespace Reservations.API.DTO;
 
-namespace Reservations.API.Model;
-public class History
+public class ReservationHistoryDto
 {
   public DateTime ReservationDate { get; set; } = DateTime.UtcNow;
+  public DateTime? ReturnDate { get; set; }
   public string? ReservationComment { get; set; }
-  public int BookId { get; set; }
 }
