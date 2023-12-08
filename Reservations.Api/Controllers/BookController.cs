@@ -47,8 +47,20 @@ public class BookController(IBookService bookService) : ControllerBase
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BookDto>> UpdateBook(int id, UpdateBookDto bookDto)
     {
+
+        if (id != bookDto.Id)
+            return BadRequest(
+              new
+              {
+                  Message = "Book Id mismatch",
+                  BookId = id,
+                  status = StatusCodes.Status400BadRequest,
+              }
+            );
+
         var book = await bookService.UpdateAsync(id, bookDto);
         if (book is null)
             return NotFound(
@@ -73,10 +85,10 @@ public class BookController(IBookService bookService) : ControllerBase
     }
 
 
-    [HttpPost("{bookId:int}/reserve/{comment:alpha}")]
+    [HttpPost("{bookId:int}/reserve/{*comment:maxlength(250)}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BookDto>> ReserveBook(int bookId, string comment)
+    public async Task<ActionResult<BookDto>> ReserveBook(int bookId, [FromRoute] string comment)
     {
         var book = await bookService.ReserveBookAsync(bookId, comment);
         if (book is null)
@@ -106,12 +118,14 @@ public class BookController(IBookService bookService) : ControllerBase
         var result = await bookService.RemoveReservationAsync(bookId);
         if (!result)
             return NotFound(
+              new
+              {
+                  Message = "Book not found (or was not reserved) so cannot remove reservation",
+                  BookId = bookId
 
-              new { Message = "Book not found so cannot remove reservation", BookId = bookId });
+              });
         return result;
     }
-
-
 
 
     [HttpGet("available-books")]
@@ -126,8 +140,10 @@ public class BookController(IBookService bookService) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoroy(int bookId)
     {
-        return await bookService.getSingleBookHistoryAsync(bookId);
+        var book = await bookService.GetByIdAsync(bookId);
+        // TODO: what to rerturn if book is null
 
+        return await bookService.getSingleBookHistoryAsync(bookId);
     }
 
 }

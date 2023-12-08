@@ -130,7 +130,7 @@ ILogger<BookService> logger
         try
         {
             var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
-            if (book == null)
+            if (book == null || !book.IsReserved)
                 return false;
 
             book.IsReserved = false;
