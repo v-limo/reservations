@@ -1,1 +1,12 @@
 global using Xunit;
+global using Microsoft.AspNetCore.Mvc;
+global using Moq;
+global using Reservations.Api.Controllers;
+global using Reservations.Api.Services.Interfaces;
+global using Reservations.API.DTO;
+global using Reservations.API.Model;
+global using FluentAssertions;
+global using AutoMapper;
+global using Microsoft.Extensions.Logging;
+global using Reservations.Api.Data;
+global using Reservations.Api.Services.Implementation;
