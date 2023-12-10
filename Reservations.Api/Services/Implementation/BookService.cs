@@ -138,7 +138,7 @@ ILogger<BookService> logger
 
             var history = new ReservationHistory
             {
-                Comment = "Reservation for ${book.Id} removed",
+                Comment = $"Reservation for ${book.Id} removed",
                 BookId = book.Id,
                 Book = book,
                 Event = ReservationAction.Remove
