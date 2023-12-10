@@ -51,6 +51,11 @@ cd reservations
 docker compose -f "docker-compose.yml" up -d --build
 ```
 
+**Combined command**
+```bash
+
+```
+
 The above command will build the application and run it in a docker container. It wll also run a postgres SQL database in a docker container and connect the application to it.The application will be running on port 5165. You can change the port in the [docker-compose.yml](/docker-compose.yml) file
 
 - API: http://localhost:5165
@@ -64,22 +69,20 @@ http://localhost:5165/swagger/index.html
 ```
 
 ### 2. Exclusively as a container
+// Tod: test that it works as expected.
 
 To be able to run the application as a container, you need to have docker installed and **running** on your machine. You can download and install docker from [here](https://www.docker.com/)
 
-- Pull the [image](https://hub.docker.com/r/limov/reservationsapi) from docker hub
+- Pull and run postgres and [api](https://hub.docker.com/r/limov/reservationsapi) from docker hub
 
 ```bash
-docker pull limov/reservations
+# runs the api
+docker run -d -p 5165:5165 --name reservationsapi limov/reservationsapi:latest
+# runs the postgres image with all the setting as in the docker compose
+docker run --name db-postgres -e POSTGRES_PASSWORD=MyVeryStrongPassword123! -e POSTGRES_USER=postgres -e POSTGRES_DB=bookdb  -p 5432:5432 -v app_data:/var/lib/postgresql/data --network apinetwork -d postgres
 ```
 
-- Run the image
-
-```bash
-docker run -d -p 5165:80 --name reservations vlimo/reservations:latest
-```
-
-- The application will be running on port 5165.You can change the port in the "/docker-compose.yml" file
+- The application will be running on port 5165.
   - API: http://localhost:5165
   - Swagger UI: http://localhost:5165/swagger/index.html
 
