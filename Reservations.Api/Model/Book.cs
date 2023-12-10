@@ -10,5 +10,5 @@ public class Book : BaseEntity
 
     public bool IsReserved { get; set; } = false;
     public string? ReservationComment { get; set; } = null;
-    public List<ReservationHistory> ReservationHistories { get; set; } = [];
+    public List<ReservationHistory> ReservationHistories { get; set; } = new();
 }
