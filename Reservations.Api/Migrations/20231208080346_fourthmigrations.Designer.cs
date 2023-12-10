@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reservations.Api.Data;
@@ -11,9 +12,11 @@ using Reservations.Api.Data;
 namespace Reservations.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231208080346_fourthmigrations")]
+    partial class fourthmigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,17 +65,16 @@ namespace Reservations.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BookId")
+                    b.Property<int?>("BookId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
+                    b.Property<string>("ReservationComment")
                         .HasColumnType("text");
 
-                    b.Property<int>("Event")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("ReservationDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("EventDate")
+                    b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
@@ -84,18 +86,14 @@ namespace Reservations.Api.Migrations
 
             modelBuilder.Entity("Reservations.API.Model.ReservationHistory", b =>
                 {
-                    b.HasOne("Reservations.API.Model.Book", "Book")
-                        .WithMany("ReservationHistories")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
+                    b.HasOne("Reservations.API.Model.Book", null)
+                        .WithMany("History")
+                        .HasForeignKey("BookId");
                 });
 
             modelBuilder.Entity("Reservations.API.Model.Book", b =>
                 {
-                    b.Navigation("ReservationHistories");
+                    b.Navigation("History");
                 });
 #pragma warning restore 612, 618
         }

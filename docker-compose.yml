@@ -3,7 +3,7 @@
 version: "3.4"
 
 networks:
-  mynetwork:
+  apinetwork:
     driver: bridge
 
 services:
@@ -15,34 +15,27 @@ services:
     ports:
       - 5165:5165
     depends_on:
-      - db-sqlserver
       - db-postgres
-
+    environment:
+      - ConnectionStrings__PostgresConnection=Server=db-postgres;Port=5432;Database=bookdb;User Id=postgres;Password=MyVeryStrongPassword123!;Pooling=true;TrustServerCertificate=true;
 
     networks:
-      - mynetwork
-
-  db-sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - MSSQL_SA_PASSWORD=MyVeryStrongPassword123!
-      - ACCEPT_EULA="Y"
-
-    ports:
-      - 1433:1433
+      - apinetwork
 
   db-postgres:
     image: postgres
+    container_name: db-postgres
     environment:
       - POSTGRES_PASSWORD=MyVeryStrongPassword123!
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=reservationsDB
+      - POSTGRES_DB=bookdb
+    restart: always
     ports:
       - 5432:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - app_data:/var/lib/postgresql/data
     networks:
-      - mynetwork
+      - apinetwork
 
 volumes:
-  postgres-data:
+  app_data:

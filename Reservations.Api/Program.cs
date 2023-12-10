@@ -1,21 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Reservations.Api.Data;
-using Reservations.Api.Profiles;
-using Reservations.Api.Services.Implementation;
-using Reservations.Api.Services.Interfaces;
-using Npgsql.EntityFrameworkCore.PostgreSQL;
-
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var postgresCoonection = builder.Configuration.GetConnectionString("PostgresConnection");
-
+var DefaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+var PostgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
 
 
 // Add services to the container.
-// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(DefaultConnection));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresCoonection));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(PostgresConnection));
 
+builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddScoped<IBookService, BookService>();
@@ -23,25 +16,43 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(
+    options =>
+    {
+        options.SwaggerDoc("v1", new()
+        {
+            Title = "Reservations API",
+            Version = "v1",
+            Description = "Reservations API for the book store",
+            Contact = new() { Name = "Vincent Limo", Email = "limovincenti@gmail.com" },
+            License = new()
+            {
+                Name = "MIT",
+                Url = new("https://opensource.org/licenses/MIT")
+            }
+
+        });
+    }
+);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-if (true) //TODO: enanble swagger only in dev
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
+    // TODO: use this only in development
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.Run();
