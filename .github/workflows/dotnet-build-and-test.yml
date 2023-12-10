@@ -1,0 +1,32 @@
+name: build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Build API project
+      run: |
+        cd Reservations.Api
+        dotnet build --configuration Release
+
+    - name: Test project
+      run: |
+        cd Reservations.Test
+        dotnet test
