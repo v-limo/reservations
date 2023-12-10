@@ -10,3 +10,4 @@ global using AutoMapper;
 global using Microsoft.Extensions.Logging;
 global using Reservations.Api.Data;
 global using Reservations.Api.Services.Implementation;
+global using Microsoft.EntityFrameworkCore;

@@ -563,7 +563,6 @@ public class BookControllerTests
         };
     }
 
-
     private List<ReservationHistoryDto> GetReservationHistoryDtos()
     {
         List<ReservationHistoryDto> history = new List<ReservationHistoryDto>
