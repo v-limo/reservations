@@ -4,59 +4,75 @@ The API is designed to manage book reservations, providing an endpoint for all C
 
 ## Features
 
-The API is documented wth swagger UI. it has the following endpoints
+The API is documented wth Swagger UI. it has the following endpoints
 
-```bash
 
-# CRUD
-- GET api/v1/books - Get all books
-- GET api/v1/books/{id} -Get a book by id
-- POST api/v1/books - Create a book
-- PUT api/v1/books/{id} -Update a book
-- DELETE api/v1/books/{id} -Delete a book
+- GET    `api/v1/books`      - Get all books
+- GET    `api/v1/books/{id}` - Get a book by id
+- POST   `api/v1/books`      - Create a book
+- PUT    `api/v1/books/{id}` - Update a book
+- DELETE `api/v1/books/{id}` - Delete a book
 
-# Others
-- POST api/v1/books/reserve - Reserve a book
-- POST api/v1/books/remove-reservation - Remove a reservation
-- GET api/v1/books/available - Get all available books
+- POST  `api/v1/books/{bookId}reserve/{comment}`   - Reserve a book
+- POST  `api/v1/books/{bookId}/remove-reservation` - Remove a reservation
+- GET   `api/v1/books/available-books`             - Get all available books
 
-- GET api/v1/books/{id}/history - Get reservation history for a book
-```
+- GET   `api/v1/books/{bookId}/history`            - Get reservation history for a book
 
 ## Prerequisites
 
 - [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and above
 - [Docker](https://www.docker.com/) (Optional)
-- [Postgres](https://www.postgresql.org/) SQl (Optional as it can be run with Docker)
+- [Postgres](https://www.postgresql.org/) SQL (Optional as it can be run with Docker)
 
 ## Getting Started
 
 ### 1. Locally with Docker - Recommended
 
-- Clone the repository
 
 ```bash
+# Clone
 git clone git@github.com:v-limo/reservations.git
-```
 
-- Navigate to the project directory
-
-```bash
+# Navigate to the project dir
 cd reservations
-```
 
-- Run the application with docker compose
+# Navigate to the API project
+cd Reservations.Api
 
-```bash
+# Build the API project
+dotnet build
+
+# Add Migrations
+dotnet ef migrations add InitialMigration
+
+# Build ad run docker-compose
+cd ..
 docker compose -f "docker-compose.yml" up -d --build
+open http://localhost:5165/swagger/index.html
+
+# Update the Database
+cd Reservations.Api
+dotnet ef database update
 ```
 
-**Combined command**
+- **Combined command** 
+
 ```bash
+git clone git@github.com:v-limo/reservations.git &&
+cd reservations &&
+cd Reservations.Api &&
+dotnet build &&
+dotnet ef migrations add InitialMigration &&
+cd .. &&
+docker compose -f "docker-compose.yml" up -d --build &&
+open http://localhost:5165/swagger/index.html &&
+cd Reservations.Api &&
+dotnet ef database update
 
 ```
 
-The above command will build the application and run it in a docker container. It wll also run a postgres SQL database in a docker container and connect the application to it.The application will be running on port 5165. You can change the port in the [docker-compose.yml](/docker-compose.yml) file
+The above command will build the application and run it in a docker container. It will also run a Postgres SQL database in a docker container and connect the application to it. The application will be running on port 5165. You can change the port in the [docker-compose.yml](/docker-compose.yml) file
 
 - API: http://localhost:5165
   -Swagger UI: http://localhost:5165/swagger/index.html
@@ -68,25 +84,7 @@ The above command will build the application and run it in a docker container. I
 http://localhost:5165/swagger/index.html
 ```
 
-### 2. Exclusively as a container
-// Tod: test that it works as expected.
-
-To be able to run the application as a container, you need to have docker installed and **running** on your machine. You can download and install docker from [here](https://www.docker.com/)
-
-- Pull and run postgres and [api](https://hub.docker.com/r/limov/reservationsapi) from docker hub
-
-```bash
-# runs the api
-docker run -d -p 5165:5165 --name reservationsapi limov/reservationsapi:latest
-# runs the postgres image with all the setting as in the docker compose
-docker run --name db-postgres -e POSTGRES_PASSWORD=MyVeryStrongPassword123! -e POSTGRES_USER=postgres -e POSTGRES_DB=bookdb  -p 5432:5432 -v app_data:/var/lib/postgresql/data --network apinetwork -d postgres
-```
-
-- The application will be running on port 5165.
-  - API: http://localhost:5165
-  - Swagger UI: http://localhost:5165/swagger/index.html
-
-### 3. Running without Docker
+### 2. Running without Docker
 
 - Clone the repository
 
