@@ -1,18 +1,20 @@
 namespace Reservations.Test.UnitTests;
-
-public class BookServiceTest
+public class BookServiceTest : IDisposable
 {
     private IBookService _bookService;
+    private readonly ApplicationDbContext _dbContext;
 
     public BookServiceTest()
     {
-        Mock<ApplicationDbContext> dbContextMock = new();
-        Mock<IMapper> mapperMock = new();
-        Mock<ILogger<BookService>> loggerMock = new();
-        Mock<DbSet<Book>> dbSetMock = new();
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                 .UseInMemoryDatabase(databaseName: "TestDatabase")
+                 .Options;
 
-       // TODO: fix mocking of DbContext
-        // dbContextMock.Setup(x => x.Books).Returns(dbSetMock.Object);
+        _dbContext = new ApplicationDbContext(options);
+        var mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
+        var logger = new Logger<BookService>(new LoggerFactory());
+
+        _bookService = new BookService(_dbContext, mapper, logger);
     }
 
 
@@ -20,33 +22,33 @@ public class BookServiceTest
     public async Task CreatAsync_WithValidData_ReturnsCreatedBook()
     {
         // Arrange
-        var bookDto = GetreateBookDto();
-        var book = GetBooksData().FirstOrDefault();
+        var CreatedBook = GetreateBookDto();
 
         // Act
-        // var result = await _bookService.CreateAsync(bookDto);
-        await Task.Delay(1); // TODO: remove this line here and in all other tests
+        var result = await _bookService.CreateAsync(CreatedBook);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Title.Should().Be(CreatedBook.Title);
+        result.Author.Should().Be(CreatedBook.Author);
     }
 
 
     // 1.2 CreateAsync with valid data
     [Fact]
-    public async Task CreatAsync_WithInvalidData_ReturnsNull()
+    public async Task CreatAsync_WithInvalidData_ThrowException()
     {
         // Arrange
         var created = GetreateBookDto();
         created.Title = null!;
-        var book = GetBooksData().FirstOrDefault();
 
         // Act
-        // var result = await _bookService.CreateAsync(created);
-        await Task.Delay(1);
+        var result = async () => await _bookService.CreateAsync(created);
 
         // Assert
         true.Should().BeTrue();
+        await result.Should().ThrowAsync<Exception>();
     }
 
     // 2.1 GetAllAsync books with no books
@@ -54,14 +56,14 @@ public class BookServiceTest
     public async Task GetAllAsync_WithNoBooks_ReturnsEmptyList()
     {
         // Arrange
-        var booksDto = new List<BookDto>();
 
         // Act
-        // var result = await _bookService.GetAllAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetAllAsync();
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().HaveCount(0);
     }
 
     // 2.2 Get all books with books
@@ -69,14 +71,18 @@ public class BookServiceTest
     public async Task GetAllAsync_WithBooks_ReturnsAllBooks()
     {
         // Arrange
-        var booksDto = GetBooksDto();
+        var createdbook = GetreateBookDto();
+
+        var createdbookdbt = await _bookService.CreateAsync(createdbook);
 
         // Act
-        // var result = await _bookService.GetAllAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetAllAsync();
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
     }
 
 
@@ -85,15 +91,14 @@ public class BookServiceTest
     public async Task GetByIdAsync_WithInvalidId_Null()
     {
         // Arrange
-        var bookDto = GetBooksDto().FirstOrDefault();
         var invalidId = 100;
 
         // Act
-        // var result = await _bookService.GetByIdAsync(invalidId);
-        await Task.Delay(1);
+        var result = await _bookService.GetByIdAsync(invalidId);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeNull();
     }
 
 
@@ -102,39 +107,44 @@ public class BookServiceTest
     public async Task GetByIdAsync_WithValidId_ReturnsBook()
     {
         // Arrange
-        var bookDto = GetBooksDto().FirstOrDefault();
-        var validId = 1;
+        var createBood = GetreateBookDto();
+        var bookDto = await _bookService.CreateAsync(createBood);
+        var validId = bookDto.Id;
+
+        await _bookService.CreateAsync(createBood);
 
         // Act
-        // var result = await _bookService.GetByIdAsync(validId);
-        await Task.Delay(1);
+        var result = await _bookService.GetByIdAsync(validId);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Id.Should().Be(bookDto.Id);
+        result.Title.Should().Be(bookDto.Title);
     }
 
 
     // 4.1 UpdateAsync - Update book with invalid id
     [Fact]
-    public async Task UpdateAsync_WithInvalidId_Null()
+    public async Task UpdateAsync_WithInvalidId_ReturnsNull()
     {
         // Arrange
-        var bookDto = GetBooksDto().FirstOrDefault();
-        var invalidId = 100;
+        var invalidId = -100;
         var update = new UpdateBookDto
         {
-            Id = bookDto.Id,
-            Title = bookDto.Title,
+            Id = invalidId + 1,
+            Title = "New Title",
             Author = "New Author",
         };
 
 
         // Act
-        // var result = await _bookService.UpdateAsync(invalidId, update);
-        await Task.Delay(1);
+        var result = await _bookService.UpdateAsync(invalidId, update);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeNull();
     }
 
 
@@ -142,51 +152,59 @@ public class BookServiceTest
     public async Task UpdateAsync_WithValidId_ReturnsUpdatedBook()
     {
         // Arrange
-        var bookDto = GetBooksDto().FirstOrDefault();
-        var validId = 1;
+        var book = await _bookService.CreateAsync(GetreateBookDto());
+
+        book.Author = "New Author";
+        var validId = book.Id;
+
         var update = new UpdateBookDto
         {
-            Id = bookDto.Id,
-            Title = bookDto.Title,
+            Id = book.Id,
+            Title = "New Title",
             Author = "New Author",
         };
 
+
         // Act
-        // var result = await _bookService.UpdateAsync(validId, update);
-        await Task.Delay(1);
+        var result = await _bookService.UpdateAsync(validId, update);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Id.Should().Be(book.Id);
+        result.Title.Should().Be(update.Title);
     }
 
 
     [Fact] // 5.1 DeleteAsync book with invalid id
-    public async Task DeleteAsync_WithInvalidId_Null()
+    public async Task DeleteAsync_WithInvalidId_False()
     {
         // Arrange
-        var invalidId = 100;
+        var invalidId = -100;
 
         // Act
-        // var result = await _bookService.DeleteAsync(invalidId);
-        await Task.Delay(1);
+        var result = await _bookService.DeleteAsync(invalidId);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeFalse();
     }
 
 
     [Fact] // 5.2 DeleteAsync book with valid id
-    public async Task DeleteAsync_WithValidId_ReturnsXYZ()
+    public async Task DeleteAsync_WithValidId_ReturnsTrue()
     {
         // Arrange
-        var validId = 1;
+        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdbook.Id;
 
         // Act
-        // var result = await _bookService.DeleteAsync(validId);
-        await Task.Delay(1);
+        var result = await _bookService.DeleteAsync(validId);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeTrue();
     }
 
 
@@ -194,88 +212,100 @@ public class BookServiceTest
     public async Task ReserveAsync_WithInvalidIdOrComment_Null()
     {
         // Arrange
-        var invalidId = 100;
+        var invalidId = -100;
         var comment = "Comment: reserving book";
 
         // Act
-        // var result = await _bookService.ReserveBookAsync(invalidId, comment);
-        await Task.Delay(1);
+        var result = await _bookService.ReserveBookAsync(invalidId, comment);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeNull();
     }
 
     [Fact] // 6.2 ReserveBookAsync with valid id and comment
-    public async Task ReserveAsync_WithValidIdAndComment_ReturnsXYZ()
+    public async Task ReserveAsync_WithValidIdAndComment_ReturnsReservedBook()
     {
         // Arrange
-        var validId = 1;
         var comment = "Comment: reserving book";
+
+        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdbook.Id;
 
 
         // Act
-        // var result = await _bookService.ReserveBookAsync(validId, comment);
-        await Task.Delay(1);
+        var result = await _bookService.ReserveBookAsync(validId, comment);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Author.Should().Be(createdbook.Author);
+        result.IsReserved.Should().BeTrue();
     }
 
 
     [Fact] // 7.1 Remove reservation with invalid id
-    public async Task RemoveReservationAsync_WithInvalidId_Null()
+    public async Task RemoveReservationAsync_WithInvalidId_ReturnsFalse()
     {
         // Arrange
-        var invalidId = 100;
+        var invalidId = -100;
 
         // Act
-        // var result = await _bookService.RemoveReservationAsync(invalidId);
-        await Task.Delay(1);
+        var result = await _bookService.RemoveReservationAsync(invalidId);
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeFalse();
     }
 
     [Fact] // 7.2 Remove reservation with valid id
     public async Task RemoveReservationAsync_WithValidId_ReturnsTrue()
     {
         // Arrange
-        var validId = 1;
+        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
+        await _bookService.ReserveBookAsync(createdbook.Id, "Comment: reserving book");
+        var validId = createdbook.Id;
 
         // Act
-        // var result = await _bookService.RemoveReservationAsync(validId);
-        await Task.Delay(1);
+        var result = await _bookService.RemoveReservationAsync(validId);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeTrue();
     }
 
     [Fact] // 8.1 GetAllReservedAsync with no books
     public async Task GetAllReservedAsync_WithNoBooks_ReturnsEmptyList()
     {
         // Arrange
-        var booksDto = new List<BookDto>();
 
         // Act
-        // var result = await _bookService.GetReservedBooksAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetReservedBooksAsync();
 
         // Assert
         true.Should().BeTrue();
+        result.Should().HaveCount(0);
     }
 
     [Fact] // 8.2 GetAllReservedAsync with books
-    public async Task GetAllReservedAsync_WithBooks_ReturnsAllBooks()
+    public async Task GetAllReservedAsync_WithBooks_ReturnsReserverdBooks()
     {
         // Arrange
-        var booksDto = GetBooksDto(); // 2/3 books are reserved
+
+        var FirstBook = await _bookService.CreateAsync(GetreateBookDto());
+        await _bookService.CreateAsync(GetreateBookDto());
+
+        await _bookService.ReserveBookAsync(FirstBook.Id, "Comment: reserving book");
 
         // Act
-        // var result = await _bookService.GetReservedBooksAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetReservedBooksAsync();
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
     }
 
 
@@ -283,28 +313,34 @@ public class BookServiceTest
     public async Task GetAllAvailableAsync_WithNoBooks_ReturnsEmptyList()
     {
         // Arrange
-        var booksDto = new List<BookDto>();
 
         // Act
-        // var result = await _bookService.GetAvailableBooksAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetAvailableBooksAsync();
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().HaveCount(0);
     }
 
     [Fact] // 9.2 GetAllAvailableAsync with books
-    public async Task GetAllAvailableAsync_WithBooks_ReturnsAllBooks()
+    public async Task GetAllAvailableAsync_WithBooks_ReturnsAvailableBooks()
     {
         // Arrange
-        var booksDto = GetBooksDto(); // 2/3 books are reserved
+        var FirstBook = await _bookService.CreateAsync(GetreateBookDto());
+        var SecondBook = await _bookService.CreateAsync(GetreateBookDto());
+        var ThiredBook = await _bookService.CreateAsync(GetreateBookDto());
+
+        await _bookService.ReserveBookAsync(FirstBook.Id, "Comment: reserving book");
 
         // Act
-        // var result = await _bookService.GetAvailableBooksAsync();
-        await Task.Delay(1);
+        var result = await _bookService.GetAvailableBooksAsync();
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
     }
 
 
@@ -312,91 +348,41 @@ public class BookServiceTest
     public async Task GetHistoryAsync_WithNoBooks_ReturnsEmptyList()
     {
         // Arrange
-        var booksDto = new List<BookDto>();
-        var history = GetReservationHistoryDtos();
-        var invalidId = 100;
+        var invalidId = -100;
 
         // Act
-        // var result = await _bookService.getSingleBookHistoryAsync(invalidId);
-        await Task.Delay(1);
+        var result = await _bookService.getSingleBookHistoryAsync(invalidId);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().BeEmpty();
     }
 
     [Fact] // 10.2 Get books history with books
     public async Task GetHistoryAsync_WithBooks_ReturnsAllBooks()
     {
         // Arrange
-        var history = GetReservationHistoryDtos();
-        var validId = 1;
+        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdbook.Id;
+
+        await _bookService.ReserveBookAsync(validId, "Comment: reserving book");
+        await _bookService.RemoveReservationAsync(validId);
+
 
         // Act
-        // var result = await _bookService.getSingleBookHistoryAsync(validId);
-        await Task.Delay(1);
+        var result = await _bookService.getSingleBookHistoryAsync(validId);
+
 
         // Assert
         true.Should().BeTrue();
+        result.Should().NotBeEmpty();
+        result.Should().HaveCount(2);
+        result.Should().BeOfType<List<ReservationHistoryDto>>();
     }
 
-    private List<Book> GetBooksData()
-    {
-        List<Book> books = new List<Book>
-        {
-            new Book
-            {
-                Id = 1,
-                Title = "Book 1",
-                Author = "Author 1",
-            },
-            new Book
-            {
-                Id = 2,
-                Title = "Book 2",
-                Author = "Author 2",
-            },
-            new Book
-            {
-                Id = 3,
-                Title = "Book 3",
-                Author = "Author 3",
-            }
-        };
 
-        return books;
-    }
 
-    private List<BookDto> GetBooksDto()
-    {
-        List<BookDto> books = new List<BookDto>
-        {
-            new BookDto
-            {
-                Id = 1,
-                Title = "Book 1",
-                Author = "Author 1",
-                IsReserved = true,
-            },
-            new BookDto
-            {
-                Id = 2,
-                Title = "Book 2",
-                Author = "Author 2",
-                IsReserved = true,
-                ReservationComment = "Comment: reserving book",
-            },
-            new BookDto
-            {
-                Id = 3,
-                Title = "Book 3",
-                Author = "Author 3",
-                IsReserved = false,
-                ReservationComment = null,
-            }
-        };
-
-        return books;
-    }
 
     private CreateBookDto GetreateBookDto()
     {
@@ -407,28 +393,11 @@ public class BookServiceTest
         };
     }
 
-    private List<ReservationHistoryDto> GetReservationHistoryDtos()
-    {
-        List<ReservationHistoryDto> history = new List<ReservationHistoryDto>
-        {
-            new ReservationHistoryDto
-            {
-                Id = 1,
-                BookId = 1,
-                Comment = "Comment: reserving book",
-                Event = ReservationAction.Add,
-                EventDate = DateTime.Now,
-            },
-            new ReservationHistoryDto
-            {
-                Id = 2,
-                BookId = 1,
-                Comment = "Comment: removing reservation",
-                Event = ReservationAction.Remove,
-                EventDate = DateTime.Now,
-            }
-        };
 
-        return history;
+    public void Dispose()
+    {
+        _dbContext.Database.EnsureDeleted();
+        _bookService = null;
+        _dbContext?.Dispose();
     }
 }

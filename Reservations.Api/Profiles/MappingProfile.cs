@@ -1,10 +1,7 @@
 
-
-using Microsoft.EntityFrameworkCore.Migrations;
-
 namespace Reservations.Api.Profiles;
 
-class MappingProfile : Profile
+public class MappingProfile : Profile
 {
     public MappingProfile()
     {
