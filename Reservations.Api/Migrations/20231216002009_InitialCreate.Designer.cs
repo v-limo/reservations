@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Reservations.Api.Data;
 
 #nullable disable
@@ -12,45 +11,39 @@ using Reservations.Api.Data;
 namespace Reservations.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231208080506_fithmigrations-withhistory")]
-    partial class fithmigrationswithhistory
+    [Migration("20231216002009_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
-
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("Reservations.API.Model.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Author")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsReserved")
-                        .HasColumnType("boolean");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ReservationComment")
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -61,22 +54,20 @@ namespace Reservations.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("INTEGER");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    b.Property<int>("BookId")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<int?>("BookId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ReservationComment")
+                    b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("Event")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("ReturnDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("EventDate")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -87,14 +78,18 @@ namespace Reservations.Api.Migrations
 
             modelBuilder.Entity("Reservations.API.Model.ReservationHistory", b =>
                 {
-                    b.HasOne("Reservations.API.Model.Book", null)
-                        .WithMany("History")
-                        .HasForeignKey("BookId");
+                    b.HasOne("Reservations.API.Model.Book", "Book")
+                        .WithMany("ReservationHistories")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("Reservations.API.Model.Book", b =>
                 {
-                    b.Navigation("History");
+                    b.Navigation("ReservationHistories");
                 });
 #pragma warning restore 612, 618
         }

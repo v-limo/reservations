@@ -1,12 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
-var DefaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
-var PostgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
+var sqliteConnection = builder.Configuration.GetConnectionString("SqliteConnection");
 
-
-// Add services to the container.
-// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(DefaultConnection));
-
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(PostgresConnection));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlite(sqliteConnection);
+}
+);
 
 builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -47,7 +46,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
