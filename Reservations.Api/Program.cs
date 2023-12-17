@@ -1,6 +1,11 @@
 var builder = WebApplication.CreateBuilder(args);
 var sqliteConnection = builder.Configuration.GetConnectionString("SqliteConnection");
 
+Console.WriteLine($"Sqlite connection string: {sqliteConnection}");
+
+// Working directory
+Console.WriteLine($"Working directory: {Directory.GetCurrentDirectory()}");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlite(sqliteConnection);
@@ -38,6 +43,30 @@ builder.Services.AddSwaggerGen(
 
 var app = builder.Build();
 
+// database migration
+// TODO: use this only in development?
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        // context.Database.Migrate();
+        await context.Database.MigrateAsync();
+
+        context.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occred creating the DB.");
+    }
+    finally
+    {
+        scope.Dispose();
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
@@ -46,7 +75,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

@@ -13,11 +13,9 @@ services:
     ports:
       - 5165:5165
     environment:
-      - ConnectionStrings__SqliteConnection=Data Source=/app/data/reservationDB.db;Cache=Shared;Mode=ReadWriteCreate;
+      - ConnectionStrings__SqliteConnection=Data Source=reservationDB.db;
     networks:
       - apinetwork
     volumes:
-      - ./data:/app/data
-
-
-      
+      - ./:/app/data
+    user: root

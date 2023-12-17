@@ -4,7 +4,8 @@ EXPOSE 5165
 
 ENV ASPNETCORE_URLS=http://+:5165
 
-USER app
+USER root
+
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
@@ -21,4 +22,6 @@ RUN dotnet publish "Reservations.Api.csproj" -c $configuration -o /app/publish /
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ["Reservations.Api/Migrations", "Migrations/"]
+COPY ["Reservations.Api/reservationDB.db", "data/"]
 ENTRYPOINT ["dotnet", "Reservations.Api.dll"]

@@ -11,7 +11,7 @@ using Reservations.Api.Data;
 namespace Reservations.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231216002009_InitialCreate")]
+    [Migration("20231217092853_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
