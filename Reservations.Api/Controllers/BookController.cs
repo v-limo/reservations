@@ -16,10 +16,10 @@ public class BookController(IBookService bookService) : ControllerBase
 
         var book = await bookService.CreateAsync(bookDto);
 
-        // if (book is null)
+        // if (book is null) // TODO: what to do if book is null ?? GetBook throws exception
         //     return BadRequest();
 
-        return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
+        return CreatedAtAction(nameof(GetBook), new { bookId = book.Id }, book);
     }
 
 
@@ -31,50 +31,50 @@ public class BookController(IBookService bookService) : ControllerBase
     }
 
 
-    [HttpGet("{id:int}")]
+    [HttpGet("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BookDto>> GetBook(int id)
+    public async Task<ActionResult<BookDto>> GetBook(int bookId)
     {
-        var book = await bookService.GetByIdAsync(id);
+        var book = await bookService.GetByIdAsync(bookId);
         return book;
     }
 
 
-    [HttpPut("{id:int}")]
+    [HttpPut("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<BookDto>> UpdateBook(int id, UpdateBookDto updateBookDto)
+    public async Task<ActionResult<BookDto>> UpdateBook(int bookId, UpdateBookDto updateBookDto)
     {
-        if (id != updateBookDto.Id || !ModelState.IsValid)
+        if (bookId != updateBookDto.Id || !ModelState.IsValid)
             return BadRequest(
                 new
                 {
                     Message = "Book Id mismatch or invalid data",
-                    BookId = id,
+                    BookId = bookId,
                     status = StatusCodes.Status400BadRequest,
                 }
             );
 
-        var book = await bookService.UpdateAsync(id, updateBookDto);
+        var book = await bookService.UpdateAsync(bookId, updateBookDto);
         if (book is null)
             return NotFound(
-                new { Message = "Book not found so cannot update", BookId = id }
+                new { Message = "Book not found so cannot update", BookId = bookId }
             );
         return book;
     }
 
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<bool>> DeleteBook(int id)
+    public async Task<ActionResult<bool>> DeleteBook(int bookId)
     {
-        var result = await bookService.DeleteAsync(id);
+        var result = await bookService.DeleteAsync(bookId);
         if (!result)
             return NotFound(
-                new { Message = "Book not found so cannot delete", BookId = id }
+                new { Message = "Book not found so cannot delete", BookId = bookId }
             );
         // return result; ////alternativly
         return NoContent();
