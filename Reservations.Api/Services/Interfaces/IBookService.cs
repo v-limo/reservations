@@ -1,12 +1,10 @@
+namespace Reservations.Api.Services.Interfaces;
 
-namespace Reservations.Api.Services.Interfaces
+public interface IBookService : IBaseService<BookDto, CreateBookDto, UpdateBookDto>
 {
-    public interface IBookService : IBaseService<BookDto, CreateBookDto, UpdateBookDto>
-    {
-        Task<BookDto?> ReserveBookAsync(int bookId, string comment);
-        Task<bool> RemoveReservationAsync(int bookId);
-        Task<IEnumerable<BookDto>> GetReservedBooksAsync();
-        Task<IEnumerable<BookDto>> GetAvailableBooksAsync();
-        Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId);
-    }
+    Task<BookDto?> ReserveBookAsync(int bookId, string comment);
+    Task<bool> RemoveReservationAsync(int bookId);
+    Task<IEnumerable<BookDto>> GetReservedBooksAsync();
+    Task<IEnumerable<BookDto>> GetAvailableBooksAsync();
+    Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId);
 }

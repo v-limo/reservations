@@ -53,7 +53,7 @@ public class BookController(IBookService bookService) : ControllerBase
                 {
                     Message = "Book Id mismatch or invalid data",
                     BookId = bookId,
-                    status = StatusCodes.Status400BadRequest,
+                    status = StatusCodes.Status400BadRequest
                 }
             );
 

@@ -1,9 +1,9 @@
 namespace Reservations.Api.Services.Implementation;
 
 public class BookService(
-ApplicationDbContext dbContext,
-IMapper mapper,
-ILogger<BookService> logger
+    ApplicationDbContext dbContext,
+    IMapper mapper,
+    ILogger<BookService> logger
 ) : IBookService
 {
     public async Task<IEnumerable<BookDto>> GetAllAsync()
@@ -59,8 +59,8 @@ ILogger<BookService> logger
                 return null;
 
 
-
-            existingBook.UpdatedAt = DateTime.UtcNow; //manual time update, because we don't want to allow user to update this field
+            existingBook.UpdatedAt =
+                DateTime.UtcNow; //manual time update, because we don't want to allow user to update this field
             mapper.Map(updateDto, existingBook);
             dbContext.Entry(existingBook).State = EntityState.Modified;
             await dbContext.SaveChangesAsync();
@@ -109,7 +109,7 @@ ILogger<BookService> logger
             {
                 Comment = comment,
                 BookId = book.Id,
-                Book = book,
+                Book = book
             };
 
             await dbContext.ReservationHistory.AddAsync(history);
@@ -187,7 +187,6 @@ ILogger<BookService> logger
 
     public async Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId)
     {
-
         try
         {
             var histories = await dbContext.ReservationHistory.Where(x => x.BookId == bookId).ToListAsync();
@@ -198,7 +197,5 @@ ILogger<BookService> logger
             logger.LogError(ex, "Error while getting book histories");
             throw;
         }
-
-
     }
 }

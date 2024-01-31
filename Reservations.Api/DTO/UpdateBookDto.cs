@@ -1,9 +1,7 @@
-
 namespace Reservations.API.DTO;
 
 public class UpdateBookDto
 {
-
     [Required(ErrorMessage = "Book Title is required and must match the path id")]
     public int Id { get; set; }
 

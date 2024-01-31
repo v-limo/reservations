@@ -31,7 +31,6 @@
 /Users/vincentlimo/Desktop/Vincent/dotnet/Reservations.API/obj/Debug/net8.0/Reservations.Api.genruntimeconfig.cache
 /Users/vincentlimo/Desktop/Vincent/dotnet/Reservations.API/obj/Debug/net8.0/ref/Reservations.Api.dll
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/appsettings.Development.json
-/Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/appsettings.json
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/Reservations.Api
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/Reservations.Api.deps.json
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/Reservations.Api.runtimeconfig.json
