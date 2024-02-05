@@ -39,7 +39,6 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        // context.Database.Migrate();
         await context.Database.MigrateAsync();
 
         context.Database.EnsureCreated();
@@ -48,11 +47,6 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occred creating the DB.");
-    }
-    finally
-    {
-        // ReSharper disable once DisposeOnUsingVariable
-        scope.Dispose();
     }
 }
 
@@ -65,8 +59,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
 
 app.UseHttpsRedirection();
 
-app.MapControllers();
-
 app.UseMiddleware<ErrorHandlerMiddleware>();
+
+app.MapControllers();
 
 app.Run();

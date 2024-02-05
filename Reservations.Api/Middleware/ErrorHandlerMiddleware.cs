@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Reservations.Api.Middleware;
 
 public class ErrorHandlerMiddleware(ILogger<ErrorHandlerMiddleware> logger) : IMiddleware
@@ -10,9 +12,19 @@ public class ErrorHandlerMiddleware(ILogger<ErrorHandlerMiddleware> logger) : IM
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unhandled exception");
-            context.Response.StatusCode = 500;
-            await context.Response.WriteAsJsonAsync(new { Message = "Internal Server Error" });
+            logger.LogError(ex, ex.Message);
+            var problemDetails = new ProblemDetails
+            {
+                Type = null,
+                Title = "An error occurred",
+                Status = StatusCodes.Status500InternalServerError,
+                Detail = ex.Message,
+                Instance = context.Request.Path
+            };
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(JsonSerializer.Serialize(problemDetails));
         }
     }
 }
