@@ -1,9 +1,7 @@
-
 namespace Reservations.Api.Middleware;
 
 public class ErrorHandlerMiddleware(ILogger<ErrorHandlerMiddleware> logger) : IMiddleware
 {
-    private readonly ILogger<ErrorHandlerMiddleware> logger = logger;
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try

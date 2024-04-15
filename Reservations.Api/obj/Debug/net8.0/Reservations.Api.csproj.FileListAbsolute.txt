@@ -57,7 +57,6 @@
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.Reservations.Api.props
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/staticwebassets.pack.json
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/scopedcss/bundle/Reservations.Api.styles.css
-/Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/Reservations.Api.csproj.CopyComplete
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/Reservations.Api.dll
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/refint/Reservations.Api.dll
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/Reservations.Api.pdb
@@ -171,3 +170,4 @@
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/Npgsql.dll
 /Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/bin/Debug/net8.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll
+/Users/vincentlimo/Desktop/Vincent/reservations/Reservations.Api/obj/Debug/net8.0/Reservat.3D22F5C4.Up2Date

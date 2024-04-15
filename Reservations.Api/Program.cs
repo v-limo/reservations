@@ -1,12 +1,9 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
-var DefaultConnection = builder.Configuration.GetConnectionString("DefaultConnection");
-var PostgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
+var postgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
 
-
-// Add services to the container.
-// builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(DefaultConnection));
-
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(PostgresConnection));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresConnection));
 
 builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -15,24 +12,21 @@ builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
     {
-        options.SwaggerDoc("v1", new()
+        options.SwaggerDoc("v1", new OpenApiInfo
         {
             Title = "Reservations API",
             Version = "v1",
             Description = "Reservations API for the book store",
-            Contact = new() { Name = "Vincent Limo", Email = "limovincenti@gmail.com" },
-            License = new()
+            Contact = new OpenApiContact { Name = "Vincent Limo", Email = "limovincenti@gmail.com" },
+            License = new OpenApiLicense
             {
                 Name = "MIT",
-                Url = new("https://opensource.org/licenses/MIT")
+                Url = new Uri("https://opensource.org/licenses/MIT")
             }
-
         });
     }
 );
@@ -47,12 +41,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
-
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
+app.UseCors();
+app.MapControllers();
+
+app.MapGet("/", () => "Return null or nothing ");
 app.Run();

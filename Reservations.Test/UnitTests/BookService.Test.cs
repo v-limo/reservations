@@ -1,4 +1,5 @@
 namespace Reservations.Test.UnitTests;
+
 public class BookServiceTest : IDisposable
 {
     private IBookService _bookService;
@@ -7,8 +8,8 @@ public class BookServiceTest : IDisposable
     public BookServiceTest()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                 .UseInMemoryDatabase(databaseName: "TestDatabase")
-                 .Options;
+            .UseInMemoryDatabase("TestDatabase")
+            .Options;
 
         _dbContext = new ApplicationDbContext(options);
         var mapper = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
@@ -22,16 +23,16 @@ public class BookServiceTest : IDisposable
     public async Task CreatAsync_WithValidData_ReturnsCreatedBook()
     {
         // Arrange
-        var CreatedBook = GetreateBookDto();
+        var createdBook = GetreateBookDto() ?? throw new ArgumentNullException("GetreateBookDto()");
 
         // Act
-        var result = await _bookService.CreateAsync(CreatedBook);
+        var result = await _bookService.CreateAsync(createdBook);
 
         // Assert
         true.Should().BeTrue();
         result.Should().NotBeNull();
-        result.Title.Should().Be(CreatedBook.Title);
-        result.Author.Should().Be(CreatedBook.Author);
+        result.Title.Should().Be(createdBook.Title);
+        result.Author.Should().Be(createdBook.Author);
     }
 
 
@@ -62,8 +63,9 @@ public class BookServiceTest : IDisposable
 
         // Assert
         true.Should().BeTrue();
-        result.Should().NotBeNull();
-        result.Should().HaveCount(0);
+        var bookDtos = result as BookDto[] ?? result.ToArray();
+        bookDtos.Should().NotBeNull();
+        bookDtos.Should().HaveCount(0);
     }
 
     // 2.2 Get all books with books
@@ -73,16 +75,17 @@ public class BookServiceTest : IDisposable
         // Arrange
         var createdbook = GetreateBookDto();
 
-        var createdbookdbt = await _bookService.CreateAsync(createdbook);
+        await _bookService.CreateAsync(createdbook);
 
         // Act
         var result = await _bookService.GetAllAsync();
 
         // Assert
         true.Should().BeTrue();
-        result.Should().NotBeEmpty();
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
+        var bookDtos = result as BookDto[] ?? result.ToArray();
+        bookDtos.Should().NotBeEmpty();
+        bookDtos.Should().NotBeNull();
+        bookDtos.Should().HaveCount(1);
     }
 
 
@@ -134,7 +137,7 @@ public class BookServiceTest : IDisposable
         {
             Id = invalidId + 1,
             Title = "New Title",
-            Author = "New Author",
+            Author = "New Author"
         };
 
 
@@ -161,7 +164,7 @@ public class BookServiceTest : IDisposable
         {
             Id = book.Id,
             Title = "New Title",
-            Author = "New Author",
+            Author = "New Author"
         };
 
 
@@ -172,8 +175,8 @@ public class BookServiceTest : IDisposable
         // Assert
         true.Should().BeTrue();
         result.Should().NotBeNull();
-        result.Id.Should().Be(book.Id);
-        result.Title.Should().Be(update.Title);
+        result?.Id.Should().Be(book.Id);
+        result?.Title.Should().Be(update.Title);
     }
 
 
@@ -181,7 +184,7 @@ public class BookServiceTest : IDisposable
     public async Task DeleteAsync_WithInvalidId_False()
     {
         // Arrange
-        var invalidId = -100;
+        const int invalidId = -100;
 
         // Act
         var result = await _bookService.DeleteAsync(invalidId);
@@ -196,8 +199,8 @@ public class BookServiceTest : IDisposable
     public async Task DeleteAsync_WithValidId_ReturnsTrue()
     {
         // Arrange
-        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
-        var validId = createdbook.Id;
+        var createdBook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdBook.Id;
 
         // Act
         var result = await _bookService.DeleteAsync(validId);
@@ -212,8 +215,8 @@ public class BookServiceTest : IDisposable
     public async Task ReserveAsync_WithInvalidIdOrComment_Null()
     {
         // Arrange
-        var invalidId = -100;
-        var comment = "Comment: reserving book";
+        const int invalidId = -100;
+        const string comment = "Comment: reserving book";
 
         // Act
         var result = await _bookService.ReserveBookAsync(invalidId, comment);
@@ -229,8 +232,8 @@ public class BookServiceTest : IDisposable
         // Arrange
         var comment = "Comment: reserving book";
 
-        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
-        var validId = createdbook.Id;
+        var createdBook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdBook.Id;
 
 
         // Act
@@ -240,8 +243,8 @@ public class BookServiceTest : IDisposable
         // Assert
         true.Should().BeTrue();
         result.Should().NotBeNull();
-        result.Author.Should().Be(createdbook.Author);
-        result.IsReserved.Should().BeTrue();
+        result?.Author.Should().Be(createdBook.Author);
+        result?.IsReserved.Should().BeTrue();
     }
 
 
@@ -249,7 +252,7 @@ public class BookServiceTest : IDisposable
     public async Task RemoveReservationAsync_WithInvalidId_ReturnsFalse()
     {
         // Arrange
-        var invalidId = -100;
+        const int invalidId = -100;
 
         // Act
         var result = await _bookService.RemoveReservationAsync(invalidId);
@@ -263,9 +266,9 @@ public class BookServiceTest : IDisposable
     public async Task RemoveReservationAsync_WithValidId_ReturnsTrue()
     {
         // Arrange
-        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
-        await _bookService.ReserveBookAsync(createdbook.Id, "Comment: reserving book");
-        var validId = createdbook.Id;
+        var bookDto = await _bookService.CreateAsync(GetreateBookDto());
+        await _bookService.ReserveBookAsync(bookDto.Id, "Comment: reserving book");
+        var validId = bookDto.Id;
 
         // Act
         var result = await _bookService.RemoveReservationAsync(validId);
@@ -294,18 +297,19 @@ public class BookServiceTest : IDisposable
     {
         // Arrange
 
-        var FirstBook = await _bookService.CreateAsync(GetreateBookDto());
+        var firstBook = await _bookService.CreateAsync(GetreateBookDto());
         await _bookService.CreateAsync(GetreateBookDto());
 
-        await _bookService.ReserveBookAsync(FirstBook.Id, "Comment: reserving book");
+        await _bookService.ReserveBookAsync(firstBook.Id, "Comment: reserving book");
 
         // Act
         var result = await _bookService.GetReservedBooksAsync();
 
         // Assert
         true.Should().BeTrue();
-        result.Should().NotBeNull();
-        result.Should().HaveCount(1);
+        var bookDtos = result as BookDto[] ?? result.ToArray();
+        bookDtos.Should().NotBeNull();
+        bookDtos.Should().HaveCount(1);
     }
 
 
@@ -327,11 +331,11 @@ public class BookServiceTest : IDisposable
     public async Task GetAllAvailableAsync_WithBooks_ReturnsAvailableBooks()
     {
         // Arrange
-        var FirstBook = await _bookService.CreateAsync(GetreateBookDto());
-        var SecondBook = await _bookService.CreateAsync(GetreateBookDto());
-        var ThiredBook = await _bookService.CreateAsync(GetreateBookDto());
+        var firstBook = await _bookService.CreateAsync(GetreateBookDto());
+        var secondBook = await _bookService.CreateAsync(GetreateBookDto());
+        var thiredBook = await _bookService.CreateAsync(GetreateBookDto());
 
-        await _bookService.ReserveBookAsync(FirstBook.Id, "Comment: reserving book");
+        await _bookService.ReserveBookAsync(firstBook.Id, "Comment: reserving book");
 
         // Act
         var result = await _bookService.GetAvailableBooksAsync();
@@ -339,8 +343,9 @@ public class BookServiceTest : IDisposable
 
         // Assert
         true.Should().BeTrue();
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        var bookDtos = result as BookDto[] ?? result.ToArray();
+        bookDtos.Should().NotBeNull();
+        bookDtos.Should().HaveCount(2);
     }
 
 
@@ -351,7 +356,7 @@ public class BookServiceTest : IDisposable
         var invalidId = -100;
 
         // Act
-        var result = await _bookService.getSingleBookHistoryAsync(invalidId);
+        var result = await _bookService.GetSingleBookHistoryAsync(invalidId);
 
 
         // Assert
@@ -363,25 +368,24 @@ public class BookServiceTest : IDisposable
     public async Task GetHistoryAsync_WithBooks_ReturnsAllBooks()
     {
         // Arrange
-        var createdbook = await _bookService.CreateAsync(GetreateBookDto());
-        var validId = createdbook.Id;
+        var createdBook = await _bookService.CreateAsync(GetreateBookDto());
+        var validId = createdBook.Id;
 
         await _bookService.ReserveBookAsync(validId, "Comment: reserving book");
         await _bookService.RemoveReservationAsync(validId);
 
 
         // Act
-        var result = await _bookService.getSingleBookHistoryAsync(validId);
+        var result = await _bookService.GetSingleBookHistoryAsync(validId);
 
 
         // Assert
         true.Should().BeTrue();
-        result.Should().NotBeEmpty();
-        result.Should().HaveCount(2);
-        result.Should().BeOfType<List<ReservationHistoryDto>>();
+        var reservationHistoryDtos = result.ToList();
+        reservationHistoryDtos.Should().NotBeEmpty();
+        reservationHistoryDtos.Should().HaveCount(2);
+        reservationHistoryDtos.Should().BeOfType<List<ReservationHistoryDto>>();
     }
-
-
 
 
     private CreateBookDto GetreateBookDto()
@@ -389,7 +393,7 @@ public class BookServiceTest : IDisposable
         return new CreateBookDto
         {
             Title = "Book 1",
-            Author = "Author 1",
+            Author = "Author 1"
         };
     }
 

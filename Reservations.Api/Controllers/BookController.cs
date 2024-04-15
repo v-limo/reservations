@@ -53,7 +53,7 @@ public class BookController(IBookService bookService) : ControllerBase
                 {
                     Message = "Book Id mismatch or invalid data",
                     BookId = id,
-                    status = StatusCodes.Status400BadRequest,
+                    status = StatusCodes.Status400BadRequest
                 }
             );
 
@@ -134,8 +134,8 @@ public class BookController(IBookService bookService) : ControllerBase
     public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoroy(int bookId)
     {
         var book = await bookService.GetByIdAsync(bookId);
-        // TODO: what to rerturn if book is null ??
+        // TODO: what to returns if book is null ??
 
-        return await bookService.getSingleBookHistoryAsync(bookId);
+        return await bookService.GetSingleBookHistoryAsync(bookId);
     }
 }

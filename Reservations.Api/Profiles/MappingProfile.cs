@@ -1,4 +1,3 @@
-
 namespace Reservations.Api.Profiles;
 
 public class MappingProfile : Profile

@@ -9,4 +9,5 @@ global using Reservations.Api.Middleware;
 global using Reservations.Api.Profiles;
 global using Reservations.Api.Services.Implementation;
 global using Microsoft.AspNetCore.Mvc;
+
 // global using Npgsql.EntityFrameworkCore.PostgreSQL;

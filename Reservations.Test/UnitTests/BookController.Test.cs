@@ -49,8 +49,9 @@ public class BookControllerTests
     {
         // Arrange
         var books = new List<BookDto>();
+        if (books == null) throw new ArgumentNullException(nameof(books));
         _mockBookService.Setup(x => x.GetAllAsync()).ReturnsAsync(books);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetBooks();
@@ -68,7 +69,7 @@ public class BookControllerTests
         // Arrange
         var books = GetBooksDto();
         _mockBookService.Setup(x => x.GetAllAsync()).ReturnsAsync(books);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetBooks();
@@ -87,21 +88,20 @@ public class BookControllerTests
     public async Task GetBookById_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
         var invalidId = 10;
-        var book = GetBooksDto().First();
-        book = null;
+        BookDto? book = null;
 
-        _mockBookService.Setup(x => x.GetByIdAsync(invalidId)).ReturnsAsync(book);
+        _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
 
         // Act
         var result = await controller.GetBook(invalidId);
 
         // Assert
-        result?.Result?.Should().BeOfType<
+        result.Result?.Should().BeOfType<
             NotFoundObjectResult
         >();
-        result?.Result?.As<NotFoundObjectResult>()?.StatusCode.Should().Be(404);
+        result.Result?.As<NotFoundObjectResult>()?.StatusCode.Should().Be(404);
     }
 
     // 3.2 Get book by id with valid id
@@ -111,16 +111,15 @@ public class BookControllerTests
         // Arrange
         var book = GetBooksDto().First();
         _mockBookService.Setup(x => x.GetByIdAsync(book.Id)).ReturnsAsync(book);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetBook(book.Id);
 
         // Assert
-        var bookDto = result;
-        bookDto?.Value?.Id.Should().Be(book.Id);
-        bookDto?.Value?.Title.Should().Be(book.Title);
-        bookDto.Should().NotBeNull();
+        result.Value?.Id.Should().Be(book.Id);
+        result.Value?.Title.Should().Be(book.Title);
+        result.Should().NotBeNull();
     }
 
 
@@ -136,12 +135,11 @@ public class BookControllerTests
         {
             Id = 10,
             Title = "Book 1",
-            Author = "Author 1",
+            Author = "Author 1"
         };
 
         _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync((BookDto)null);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
-
+        var controller = new BookController(_mockBookService.Object);
         // Act
         var result = await controller.UpdateBook(book.Id, update);
 
@@ -160,14 +158,14 @@ public class BookControllerTests
 
         var update = new UpdateBookDto
         {
-            Title = book.Title,
+            Title = book.Title
         };
         update.Id = book.Id;
         update.Author = book.Author;
 
         _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync(book);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.UpdateBook(book.Id, update);
@@ -189,10 +187,10 @@ public class BookControllerTests
         {
             Id = book.Id,
             Title = book.Title,
-            Author = book.Author,
+            Author = book.Author
         };
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
         controller.ModelState.AddModelError("Title", "Title is required");
 
         // Act
@@ -216,12 +214,12 @@ public class BookControllerTests
         {
             Id = book.Id,
             Title = book.Title,
-            Author = book.Author,
+            Author = book.Author
         };
 
         _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync(book);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.UpdateBook(book.Id, update);
@@ -244,7 +242,7 @@ public class BookControllerTests
         var nonExistingId = 10;
         _mockBookService.Setup(x => x.DeleteAsync(nonExistingId)).ReturnsAsync(false);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
 
@@ -261,7 +259,7 @@ public class BookControllerTests
         var books = GetBooksDto();
         var existingId = 1;
         _mockBookService.Setup(x => x.DeleteAsync(existingId)).ReturnsAsync(true);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.DeleteBook(existingId);
@@ -285,7 +283,7 @@ public class BookControllerTests
 
         _mockBookService.Setup(x => x.ReserveBookAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(nullBookDto);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.ReserveBook(invalidId, comment);
@@ -309,10 +307,10 @@ public class BookControllerTests
                 Title = book.Title,
                 Author = book.Author,
                 IsReserved = true,
-                ReservationComment = comment,
+                ReservationComment = comment
             }
         );
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.ReserveBook(book.Id, comment);
@@ -336,7 +334,7 @@ public class BookControllerTests
         var invalidId = 10;
 
         _mockBookService.Setup(x => x.RemoveReservationAsync(It.IsAny<int>())).ReturnsAsync(false);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.RemoveReservation(invalidId);
@@ -351,7 +349,7 @@ public class BookControllerTests
     {
         // Arrange
         _mockBookService.Setup(x => x.RemoveReservationAsync(It.IsAny<int>())).ReturnsAsync(true);
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.RemoveReservation(1);
@@ -392,7 +390,7 @@ public class BookControllerTests
         var reservedBooks = books.Where(x => x.IsReserved);
         _mockBookService.Setup(x => x.GetReservedBooksAsync()).ReturnsAsync(reservedBooks);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetReservedBooks();
@@ -416,7 +414,7 @@ public class BookControllerTests
         books.Clear();
         _mockBookService.Setup(x => x.GetAvailableBooksAsync()).ReturnsAsync(books);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetAvailableBooks();
@@ -437,7 +435,7 @@ public class BookControllerTests
         var availableBooks = books.Where(x => !x.IsReserved);
         _mockBookService.Setup(x => x.GetAvailableBooksAsync()).ReturnsAsync(availableBooks);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetAvailableBooks();
@@ -459,9 +457,9 @@ public class BookControllerTests
         var bookId = 1;
         var history = GetReservationHistoryDtos();
 
-        _mockBookService.Setup(x => x.getSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
+        _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetSingleBookHistoroy(bookId);
@@ -481,9 +479,9 @@ public class BookControllerTests
         var bookId = 3;
         var history = GetReservationHistoryDtos();
 
-        _mockBookService.Setup(x => x.getSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
+        _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
-        var controller = new Api.Controllers.BookController(_mockBookService.Object);
+        var controller = new BookController(_mockBookService.Object);
 
         // Act
         var result = await controller.GetSingleBookHistoroy(bookId);
@@ -497,25 +495,25 @@ public class BookControllerTests
 
     private List<Book> GetBooksData()
     {
-        List<Book> books = new List<Book>
+        List<Book> books = new()
         {
-            new Book
+            new Book()
             {
                 Id = 1,
                 Title = "Book 1",
-                Author = "Author 1",
+                Author = "Author 1"
             },
-            new Book
+            new Book()
             {
                 Id = 2,
                 Title = "Book 2",
-                Author = "Author 2",
+                Author = "Author 2"
             },
-            new Book
+            new Book()
             {
                 Id = 3,
                 Title = "Book 3",
-                Author = "Author 3",
+                Author = "Author 3"
             }
         };
 
@@ -524,30 +522,30 @@ public class BookControllerTests
 
     private List<BookDto> GetBooksDto()
     {
-        List<BookDto> books = new List<BookDto>
+        List<BookDto> books = new()
         {
-            new BookDto
+            new BookDto()
             {
                 Id = 1,
                 Title = "Book 1",
                 Author = "Author 1",
-                IsReserved = true,
+                IsReserved = true
             },
-            new BookDto
+            new BookDto()
             {
                 Id = 2,
                 Title = "Book 2",
                 Author = "Author 2",
                 IsReserved = true,
-                ReservationComment = "Comment: reserving book",
+                ReservationComment = "Comment: reserving book"
             },
-            new BookDto
+            new BookDto()
             {
                 Id = 3,
                 Title = "Book 3",
                 Author = "Author 3",
                 IsReserved = false,
-                ReservationComment = null,
+                ReservationComment = null
             }
         };
 
@@ -559,29 +557,29 @@ public class BookControllerTests
         return new CreateBookDto
         {
             Title = "Book 1",
-            Author = "Author 1",
+            Author = "Author 1"
         };
     }
 
     private List<ReservationHistoryDto> GetReservationHistoryDtos()
     {
-        List<ReservationHistoryDto> history = new List<ReservationHistoryDto>
+        List<ReservationHistoryDto> history = new()
         {
-            new ReservationHistoryDto
+            new ReservationHistoryDto()
             {
                 Id = 1,
                 BookId = 1,
                 Comment = "Comment: reserving book",
                 Event = ReservationAction.Add,
-                EventDate = DateTime.Now,
+                EventDate = DateTime.Now
             },
-            new ReservationHistoryDto
+            new ReservationHistoryDto()
             {
                 Id = 2,
                 BookId = 1,
                 Comment = "Comment: removing reservation",
                 Event = ReservationAction.Remove,
-                EventDate = DateTime.Now,
+                EventDate = DateTime.Now
             }
         };
 
