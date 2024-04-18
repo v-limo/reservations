@@ -1,9 +1,10 @@
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-var postgresConnection = builder.Configuration.GetConnectionString("PostgresConnection");
+var sqliteConnection = builder.Configuration.GetConnectionString("SqliteConnection");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(postgresConnection));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(sqliteConnection)
+);
 
 builder.Services.AddTransient<ErrorHandlerMiddleware>();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
@@ -33,7 +34,24 @@ builder.Services.AddSwaggerGen(
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// TODO: use this only in development?
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        await context.Database.MigrateAsync();
+
+        context.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occred creating the DB.");
+    }
+}
+
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
     // TODO: use this only in development
@@ -43,12 +61,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.UseMiddleware<ErrorHandlerMiddleware>();
 
-app.UseCors();
 app.MapControllers();
 
-app.MapGet("/", () => "Return null or nothing ");
 app.Run();

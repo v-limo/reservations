@@ -1,5 +1,3 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
-
 version: "3.4"
 
 networks:
@@ -14,28 +12,10 @@ services:
       dockerfile: Reservations.Api/Dockerfile
     ports:
       - 5165:5165
-    depends_on:
-      - db-postgres
     environment:
-      - ConnectionStrings__PostgresConnection=Server=db-postgres;Port=5432;Database=bookdb;User Id=postgres;Password=MyVeryStrongPassword123!;Pooling=true;TrustServerCertificate=true;
-
+      - ConnectionStrings__SqliteConnection=Data Source=reservationDB.db;
     networks:
       - apinetwork
-
-  db-postgres:
-    image: postgres
-    container_name: db-postgres
-    environment:
-      - POSTGRES_PASSWORD=MyVeryStrongPassword123!
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=bookdb
-    restart: always
-    ports:
-      - 5432:5432
     volumes:
-      - app_data:/var/lib/postgresql/data
-    networks:
-      - apinetwork
-
-volumes:
-  app_data:
+      - ./:/app/data
+    user: root
