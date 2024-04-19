@@ -2,7 +2,7 @@ namespace Reservations.Api.Services.Implementation;
 
 public class BookService(
     ApplicationDbContext dbContext,
-    IMapper mapper,
+    IMapperBase mapper,
     ILogger<BookService> logger
 ) : IBookService
 {
@@ -185,7 +185,7 @@ public class BookService(
         }
     }
 
-    public async Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId)
+    public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoryAsync(int bookId)
     {
         try
         {

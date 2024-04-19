@@ -33,7 +33,6 @@ public class BookServiceTest : IDisposable
     {
         // Arrange
         var createdBook = GreateBookDto();
-
         // Act
         var result = await _bookService.CreateAsync(createdBook);
 
@@ -76,6 +75,7 @@ public class BookServiceTest : IDisposable
     {
         // Arrange
         var createdBook = GreateBookDto();
+
         await _bookService.CreateAsync(createdBook);
 
         // Act
@@ -285,6 +285,7 @@ public class BookServiceTest : IDisposable
         IEnumerable<BookDto> bookDtos = result.ToList();
         bookDtos.Should().NotBeNull();
         bookDtos.Should().HaveCount(1);
+        true.Should().BeTrue();
     }
 
     // 9. GetAllAvailableAsync
@@ -325,7 +326,7 @@ public class BookServiceTest : IDisposable
         const int invalidId = -100;
 
         // Act
-        var result = await _bookService.getSingleBookHistoryAsync(invalidId);
+        var result = await _bookService.GetSingleBookHistoryAsync(invalidId);
 
         // Assert
         result.Should().BeEmpty();
@@ -342,7 +343,7 @@ public class BookServiceTest : IDisposable
         await _bookService.RemoveReservationAsync(validId);
 
         // Act
-        var result = await _bookService.getSingleBookHistoryAsync(validId);
+        var result = await _bookService.GetSingleBookHistoryAsync(validId);
 
         // Assert
         var historyDtos = result.ToList();
@@ -350,6 +351,7 @@ public class BookServiceTest : IDisposable
         historyDtos.Should().HaveCount(2);
         historyDtos.Should().BeOfType<List<ReservationHistoryDto>>();
     }
+
 
     private static CreateBookDto GreateBookDto()
     {

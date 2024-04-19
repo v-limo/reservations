@@ -6,5 +6,5 @@ public interface IBookService : IBaseService<BookDto, CreateBookDto, UpdateBookD
     Task<bool> RemoveReservationAsync(int bookId);
     Task<IEnumerable<BookDto>> GetReservedBooksAsync();
     Task<IEnumerable<BookDto>> GetAvailableBooksAsync();
-    Task<IEnumerable<ReservationHistoryDto>> getSingleBookHistoryAsync(int bookId);
+    Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoryAsync(int bookId);
 }

@@ -136,6 +136,6 @@ public class BookController(IBookService bookService) : ControllerBase
         var book = await bookService.GetByIdAsync(bookId);
         // TODO: what to rerturn if book is null ??
 
-        return await bookService.getSingleBookHistoryAsync(bookId);
+        return await bookService.GetSingleBookHistoryAsync(bookId);
     }
 }

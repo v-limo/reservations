@@ -1,3 +1,5 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 var sqliteConnection = builder.Configuration.GetConnectionString("SqliteConnection");
 

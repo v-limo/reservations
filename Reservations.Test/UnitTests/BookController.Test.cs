@@ -46,6 +46,7 @@ public class BookControllerTests
     {
         // Arrange
         List<BookDto> books = [];
+        if (books == null) throw new ArgumentNullException(nameof(books));
         _mockBookService.Setup(x => x.GetAllAsync()).ReturnsAsync(books);
         var controller = new BookController(_mockBookService.Object);
 
@@ -70,9 +71,9 @@ public class BookControllerTests
         var result = await controller.GetBooks();
 
         // Assert
-        var bookDto = result as BookDto[] ?? result.ToArray();
-        bookDto.Should().BeEquivalentTo(books);
-        bookDto.Should().NotBeNull();
+        var bookDtos = result as BookDto[] ?? result.ToArray();
+        bookDtos.Should().BeEquivalentTo(books);
+        bookDtos.Should().NotBeNull();
     }
 
 
@@ -86,14 +87,17 @@ public class BookControllerTests
         BookDto? book = null;
         _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
 
+
+        _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
+
         // Act
         var result = await controller.GetBook(invalidId);
 
         // Assert
-        result?.Result?.Should().BeOfType<
+        result.Result?.Should().BeOfType<
             NotFoundObjectResult
         >();
-        result?.Result?.As<NotFoundObjectResult>()?.StatusCode.Should().Be(404);
+        result.Result?.As<NotFoundObjectResult>()?.StatusCode.Should().Be(404);
     }
 
     [Fact]
@@ -226,6 +230,7 @@ public class BookControllerTests
         const int nonExistingId = 10;
         _mockBookService.Setup(x => x.DeleteAsync(nonExistingId)).ReturnsAsync(false);
         var controller = new BookController(_mockBookService.Object);
+
 
         // Act
         var result = await controller.DeleteBook(nonExistingId);
@@ -427,7 +432,7 @@ public class BookControllerTests
         const int bookId = 1;
         var history = GetReservationHistoryDtos();
 
-        _mockBookService.Setup(x => x.getSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
+        _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
         var controller = new BookController(_mockBookService.Object);
 
@@ -449,7 +454,7 @@ public class BookControllerTests
         const int bookId = 3;
         var history = GetReservationHistoryDtos();
 
-        _mockBookService.Setup(x => x.getSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
+        _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
         var controller = new BookController(_mockBookService.Object);
 
@@ -463,10 +468,37 @@ public class BookControllerTests
         historyDtos.Should().NotBeNull();
     }
 
-    private static List<BookDto> GetBooksDto()
+    private static List<Book> GetBooks()
     {
-        var books = new List<BookDto>
+        var books = new List<Book>
         {
+            new()
+            {
+                Id = 1,
+                Title = "Book 1",
+                Author = "Author 1"
+            },
+            new()
+            {
+                Id = 2,
+                Title = "Book 2",
+                Author = "Author 2"
+            },
+            new()
+            {
+                Id = 3,
+                Title = "Book 3",
+                Author = "Author 3"
+            }
+        };
+
+        return books;
+    }
+
+    private List<BookDto> GetBooksDto()
+    {
+        List<BookDto> books =
+        [
             new()
             {
                 Id = 1,
@@ -474,6 +506,7 @@ public class BookControllerTests
                 Author = "Author 1",
                 IsReserved = true
             },
+
             new()
             {
                 Id = 2,
@@ -490,7 +523,7 @@ public class BookControllerTests
                 IsReserved = false,
                 ReservationComment = null
             }
-        };
+        ];
 
         return books;
     }
@@ -506,7 +539,7 @@ public class BookControllerTests
 
     private static List<ReservationHistoryDto> GetReservationHistoryDtos()
     {
-        var history = new List<ReservationHistoryDto>
+        var history = new List<ReservationHistoryDto>()
         {
             new()
             {
