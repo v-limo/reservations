@@ -7,5 +7,5 @@ public class ReservationHistory
     public DateTime EventDate { get; set; } = DateTime.UtcNow;
     public ReservationAction Event { get; set; } = ReservationAction.Add;
     public int BookId { get; set; } // Foreign Key
-    public required Book Book { get; set; }
+    public required Book? Book { get; set; }
 }

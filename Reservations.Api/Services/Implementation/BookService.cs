@@ -81,8 +81,6 @@ public class BookService(
             if (existingBook == null)
                 return false;
 
-
-            // TODO: Add delete logic for related entities
             dbContext.Books.Remove(existingBook);
             await dbContext.SaveChangesAsync();
             return true;

@@ -437,7 +437,7 @@ public class BookControllerTests
         var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetSingleBookHistoroy(bookId);
+        var result = await controller.GetSingleBookHistory(bookId);
 
         // Assert
         var historyDtos = result as ReservationHistoryDto[] ?? result.ToArray();
@@ -459,7 +459,7 @@ public class BookControllerTests
         var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetSingleBookHistoroy(bookId);
+        var result = await controller.GetSingleBookHistory(bookId);
 
         // Assert
         var historyDtos = result as ReservationHistoryDto[] ?? result.ToArray();
@@ -499,7 +499,7 @@ public class BookControllerTests
     {
         List<BookDto> books =
         [
-            new()
+            new BookDto
             {
                 Id = 1,
                 Title = "Book 1",
@@ -507,7 +507,7 @@ public class BookControllerTests
                 IsReserved = true
             },
 
-            new()
+            new BookDto
             {
                 Id = 2,
                 Title = "Book 2",
@@ -515,7 +515,7 @@ public class BookControllerTests
                 IsReserved = true,
                 ReservationComment = "Comment: reserving book"
             },
-            new()
+            new BookDto
             {
                 Id = 3,
                 Title = "Book 3",
@@ -539,7 +539,7 @@ public class BookControllerTests
 
     private static List<ReservationHistoryDto> GetReservationHistoryDtos()
     {
-        var history = new List<ReservationHistoryDto>()
+        var history = new List<ReservationHistoryDto>
         {
             new()
             {

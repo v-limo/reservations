@@ -11,8 +11,8 @@ using Reservations.Api.Data;
 namespace Reservations.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231217092853_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240607082216_testmigrations")]
+    partial class testmigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 namespace Reservations.Api.Middleware;
 
 public class ErrorHandlerMiddleware(ILogger<ErrorHandlerMiddleware> logger) : IMiddleware
@@ -16,7 +14,7 @@ public class ErrorHandlerMiddleware(ILogger<ErrorHandlerMiddleware> logger) : IM
             var problemDetails = new ProblemDetails
             {
                 Type = null,
-                Title = "An error occurred",
+                Title = $"An error occurred, {ex.Message}",
                 Status = StatusCodes.Status500InternalServerError,
                 Detail = ex.Message,
                 Instance = context.Request.Path

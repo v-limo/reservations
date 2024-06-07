@@ -76,7 +76,6 @@ public class BookController(IBookService bookService) : ControllerBase
             return NotFound(
                 new { Message = "Book not found so cannot delete", BookId = bookId }
             );
-        // return result; ////alternativly
         return NoContent();
     }
 
@@ -131,11 +130,8 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("{bookId:int}/history")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoroy(int bookId)
+    public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
     {
-        var book = await bookService.GetByIdAsync(bookId);
-        // TODO: what to rerturn if book is null ??
-
         return await bookService.GetSingleBookHistoryAsync(bookId);
     }
 }

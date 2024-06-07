@@ -6,5 +6,5 @@ public class CreateBookDto
     [MinLength(2)]
     public string Title { get; set; } = string.Empty;
 
-    public string? Author { get; set; }
+    public string? Author { get; init; }
 }
