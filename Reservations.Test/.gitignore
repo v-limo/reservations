@@ -482,20 +482,3 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-# Build results
-[Oo]bj/
-[Bb]in/
-*.dll
-*.exe
-*.pdb
-*.cache
-*.suo
-*.user
-*.vspscc
-*.vssscc
-*.log
-*.vspx
-
-# vscode
-.vscode/

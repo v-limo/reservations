@@ -47,6 +47,7 @@ Generated\ Files/
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
 
+
 # NUnit
 *.VisualState.xml
 TestResult.xml
@@ -482,20 +483,3 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-# Build results
-[Oo]bj/
-[Bb]in/
-*.dll
-*.exe
-*.pdb
-*.cache
-*.suo
-*.user
-*.vspscc
-*.vssscc
-*.log
-*.vspx
-
-# vscode
-.vscode/

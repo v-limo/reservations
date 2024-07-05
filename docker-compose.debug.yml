@@ -8,5 +8,11 @@ services:
     build:
       context: .
       dockerfile: Reservations.Api/Dockerfile
+      args:
+        - configuration=Debug
     ports:
       - 5099:5099
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - ~/.vsdbg:/remote_debugger:rw
