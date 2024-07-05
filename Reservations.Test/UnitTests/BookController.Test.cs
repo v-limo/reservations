@@ -1,8 +1,17 @@
 namespace Reservations.Test.UnitTests;
 
+/// <summary>
+/// Unit test for BookController
+/// </summary>
 public class BookControllerTests
 {
     private readonly Mock<IBookService> _mockBookService = new();
+    private readonly BookController _bookController;
+
+    public BookControllerTests()
+    {
+        _bookController = new BookController(_mockBookService.Object);
+    }
 
     // 1. CreateAsync
     [Fact]
@@ -12,10 +21,9 @@ public class BookControllerTests
         var createBook = GetCreateBookDto();
         var bookDto = GetBooksDto().First();
         _mockBookService.Setup(x => x.CreateAsync(createBook)).ReturnsAsync(bookDto);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.CreateBook(createBook);
+        var result = await _bookController.CreateBook(createBook);
 
         // Assert
         var book = result.Value;
@@ -29,15 +37,14 @@ public class BookControllerTests
     {
         // Arrange
         var book = GetCreateBookDto();
-        var controller = new BookController(_mockBookService.Object);
-        controller.ModelState.AddModelError("Title", "Title is required");
+        _bookController.ModelState.AddModelError("Title", "Title is required");
 
         // Act
-        var result = await controller.CreateBook(book);
+        var result = await _bookController.CreateBook(book);
 
         // Assert
         result.Should().NotBeNull();
-        result?.Result?.Should().BeOfType<BadRequestObjectResult>();
+        result.Result?.Should().BeOfType<BadRequestObjectResult>();
     }
 
     // 2. GetAllAsync
@@ -47,11 +54,9 @@ public class BookControllerTests
         // Arrange
         List<BookDto> books = [];
         if (books == null) throw new ArgumentNullException(nameof(books));
-        _mockBookService.Setup(x => x.GetAllAsync()).ReturnsAsync(books);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetBooks();
+        var result = await _bookController.GetBooks();
 
         // Assert
         var bookDtos = result as BookDto[] ?? result.ToArray();
@@ -65,10 +70,9 @@ public class BookControllerTests
         // Arrange
         var books = GetBooksDto();
         _mockBookService.Setup(x => x.GetAllAsync()).ReturnsAsync(books);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetBooks();
+        var result = await _bookController.GetBooks();
 
         // Assert
         var bookDtos = result as BookDto[] ?? result.ToArray();
@@ -82,7 +86,6 @@ public class BookControllerTests
     public async Task GetBookById_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var controller = new BookController(_mockBookService.Object);
         const int invalidId = 10;
         BookDto? book = null;
         _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
@@ -91,7 +94,7 @@ public class BookControllerTests
         _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
 
         // Act
-        var result = await controller.GetBook(invalidId);
+        var result = await _bookController.GetBook(invalidId);
 
         // Assert
         result.Result?.Should().BeOfType<
@@ -106,14 +109,13 @@ public class BookControllerTests
         // Arrange
         var book = GetBooksDto().First();
         _mockBookService.Setup(x => x.GetByIdAsync(book.Id)).ReturnsAsync(book);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetBook(book.Id);
+        var result = await _bookController.GetBook(book.Id);
 
         // Assert
-        result?.Value?.Id.Should().Be(book.Id);
-        result?.Value?.Title.Should().Be(book.Title);
+        result.Value?.Id.Should().Be(book.Id);
+        result.Value?.Title.Should().Be(book.Title);
         result.Should().NotBeNull();
     }
 
@@ -131,14 +133,13 @@ public class BookControllerTests
             Author = "Author 1"
         };
 
-        _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync((BookDto)null);
-        var controller = new BookController(_mockBookService.Object);
+        _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync((BookDto)null!);
 
         // Act
-        var result = await controller.UpdateBook(book.Id, update);
+        var result = await _bookController.UpdateBook(book.Id, update);
 
         // Assert
-        result?.Result?.Should().BeOfType<BadRequestObjectResult>();
+        result.Result?.Should().BeOfType<BadRequestObjectResult>();
     }
 
 
@@ -159,15 +160,13 @@ public class BookControllerTests
 
         _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync(book);
 
-        var controller = new BookController(_mockBookService.Object);
-
         // Act
-        var result = await controller.UpdateBook(book.Id, update);
+        var result = await _bookController.UpdateBook(book.Id, update);
 
         // Assert
-        result?.Value?.Id.Should().Be(book.Id);
-        result?.Value?.Title.Should().Be(book.Title);
-        result?.Value?.Author.Should().Be(book.Author);
+        result.Value?.Id.Should().Be(book.Id);
+        result.Value?.Title.Should().Be(book.Title);
+        result.Value?.Author.Should().Be(book.Author);
     }
 
     [Fact]
@@ -182,14 +181,13 @@ public class BookControllerTests
             Author = book.Author
         };
 
-        var controller = new BookController(_mockBookService.Object);
-        controller.ModelState.AddModelError("Title", "Title is required");
+        _bookController.ModelState.AddModelError("Title", "Title is required");
 
         // Act
-        var result = await controller.UpdateBook(book.Id, update);
+        var result = await _bookController.UpdateBook(book.Id, update);
 
         // Assert
-        result?.Result?.Should().BeOfType<BadRequestObjectResult>();
+        result.Result?.Should().BeOfType<BadRequestObjectResult>();
     }
 
     [Fact]
@@ -209,15 +207,14 @@ public class BookControllerTests
 
         _mockBookService.Setup(x => x.UpdateAsync(book.Id, update)).ReturnsAsync(book);
 
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.UpdateBook(book.Id, update);
+        var result = await _bookController.UpdateBook(book.Id, update);
 
         // Assert
-        result?.Value?.Id.Should().Be(book.Id);
-        result?.Value?.Title.Should().Be(book.Title);
-        result?.Value?.Author.Should().Be(book.Author);
+        result.Value?.Id.Should().Be(book.Id);
+        result.Value?.Title.Should().Be(book.Title);
+        result.Value?.Author.Should().Be(book.Author);
     }
 
 
@@ -226,17 +223,16 @@ public class BookControllerTests
     public async Task DeleteBook_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var books = GetBooksDto();
+        GetBooksDto();
         const int nonExistingId = 10;
         _mockBookService.Setup(x => x.DeleteAsync(nonExistingId)).ReturnsAsync(false);
-        var controller = new BookController(_mockBookService.Object);
 
 
         // Act
-        var result = await controller.DeleteBook(nonExistingId);
+        var result = await _bookController.DeleteBook(nonExistingId);
 
         // Assert
-        result?.Result?.Should().BeOfType<NotFoundObjectResult>();
+        result.Result?.Should().BeOfType<NotFoundObjectResult>();
     }
 
     [Fact]
@@ -245,10 +241,9 @@ public class BookControllerTests
         // Arrange
         const int existingId = 1;
         _mockBookService.Setup(x => x.DeleteAsync(existingId)).ReturnsAsync(true);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.DeleteBook(existingId);
+        var result = await _bookController.DeleteBook(existingId);
 
         // Assert
         result.As<NoContentResult>()
@@ -261,19 +256,18 @@ public class BookControllerTests
     public async Task ReserveBook_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var nullBookDto = (BookDto)null;
+        var nullBookDto = (BookDto)null!;
         const int invalidId = 10;
         const string comment = "Comment: reserving book";
 
         _mockBookService.Setup(x => x.ReserveBookAsync(It.IsAny<int>(), It.IsAny<string>())).ReturnsAsync(nullBookDto);
 
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.ReserveBook(invalidId, comment);
+        var result = await _bookController.ReserveBook(invalidId, comment);
 
         // Assert
-        result?.Result?.Should().BeOfType<NotFoundObjectResult>();
+        result.Result?.Should().BeOfType<NotFoundObjectResult>();
     }
 
 
@@ -294,17 +288,16 @@ public class BookControllerTests
                 ReservationComment = comment
             }
         );
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.ReserveBook(book.Id, comment);
+        var result = await _bookController.ReserveBook(book.Id, comment);
 
         // Assert
         result.Should().NotBeNull();
-        result?.Value?.Title.Should().Be(book.Title);
-        result?.Value?.Author.Should().Be(book.Author);
-        result?.Value?.IsReserved.Should().BeTrue();
-        result?.Value?.ReservationComment.Should().Be(comment);
+        result.Value?.Title.Should().Be(book.Title);
+        result.Value?.Author.Should().Be(book.Author);
+        result.Value?.IsReserved.Should().BeTrue();
+        result.Value?.ReservationComment.Should().Be(comment);
     }
 
 
@@ -316,10 +309,9 @@ public class BookControllerTests
         const int invalidId = 10;
 
         _mockBookService.Setup(x => x.RemoveReservationAsync(It.IsAny<int>())).ReturnsAsync(false);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.RemoveReservation(invalidId);
+        var result = await _bookController.RemoveReservation(invalidId);
 
         // Assert
         result?.Result?.Should().BeOfType<NotFoundObjectResult>();
@@ -330,13 +322,12 @@ public class BookControllerTests
     {
         // Arrange
         _mockBookService.Setup(x => x.RemoveReservationAsync(It.IsAny<int>())).ReturnsAsync(true);
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.RemoveReservation(1);
+        var result = await _bookController.RemoveReservation(1);
 
         // Assert
-        result?.Result?.Should().BeOfType<NoContentResult>();
+        result.Result?.Should().BeOfType<NoContentResult>();
     }
 
     // 8. GetAllReservedAsync
@@ -368,10 +359,9 @@ public class BookControllerTests
         var reservedBooks = books.Where(x => x.IsReserved);
         _mockBookService.Setup(x => x.GetReservedBooksAsync()).ReturnsAsync(reservedBooks);
 
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetReservedBooks();
+        var result = await _bookController.GetReservedBooks();
 
         // Assert
         var bookDtos = result as BookDto[] ?? result.ToArray();
@@ -390,10 +380,9 @@ public class BookControllerTests
         books.Clear();
         _mockBookService.Setup(x => x.GetAvailableBooksAsync()).ReturnsAsync(books);
 
-        var controller = new BookController(_mockBookService.Object);
 
         // Act
-        var result = await controller.GetAvailableBooks();
+        var result = await _bookController.GetAvailableBooks();
 
         // Assert
         var bookDtos = result as BookDto[] ?? result.ToArray();
@@ -412,10 +401,8 @@ public class BookControllerTests
         IEnumerable<BookDto> expectation = availableBooks as BookDto[] ?? availableBooks.ToArray();
         _mockBookService.Setup(x => x.GetAvailableBooksAsync()).ReturnsAsync(expectation);
 
-        var controller = new BookController(_mockBookService.Object);
-
         // Act
-        var result = await controller.GetAvailableBooks();
+        var result = await _bookController.GetAvailableBooks();
 
         // Assert
         var booksDto = result as BookDto[] ?? result.ToArray();
@@ -434,10 +421,8 @@ public class BookControllerTests
 
         _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
-        var controller = new BookController(_mockBookService.Object);
-
         // Act
-        var result = await controller.GetSingleBookHistory(bookId);
+        var result = await _bookController.GetSingleBookHistory(bookId);
 
         // Assert
         var historyDtos = result as ReservationHistoryDto[] ?? result.ToArray();
@@ -456,10 +441,8 @@ public class BookControllerTests
 
         _mockBookService.Setup(x => x.GetSingleBookHistoryAsync(bookId)).ReturnsAsync(history);
 
-        var controller = new BookController(_mockBookService.Object);
-
         // Act
-        var result = await controller.GetSingleBookHistory(bookId);
+        var result = await _bookController.GetSingleBookHistory(bookId);
 
         // Assert
         var historyDtos = result as ReservationHistoryDto[] ?? result.ToArray();
