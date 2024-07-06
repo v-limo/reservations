@@ -2,7 +2,7 @@ namespace Reservations.Api.Services.Implementation;
 
 public class BookService(
     ApplicationDbContext dbContext,
-    IMapperBase mapper,
+    IMapper mapper,
     ILogger<BookService> logger
 ) : IBookService
 {
