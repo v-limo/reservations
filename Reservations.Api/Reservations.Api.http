@@ -1,6 +1,64 @@
 @Reservations.Api_HostAddress = http://localhost:5099
 
-GET {{Reservations.Api_HostAddress}}/weatherforecast/
+###
+# Create a new book
+POST {{Reservations.Api_HostAddress}}/api/v1/books
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "New Book Title",
+  "author": "Author Name"
+}
+
+###
+# Get all books
+GET {{Reservations.Api_HostAddress}}/api/v1/books
 Accept: application/json
 
 ###
+# Get a book by ID
+GET {{Reservations.Api_HostAddress}}/api/v1/books/1
+Accept: application/json
+
+###
+# Update a book by ID
+PUT {{Reservations.Api_HostAddress}}/api/v1/books/1
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": 1,
+  "title": "Updated Book Title",
+  "author": "Updated Author Name"
+}
+
+###
+# Delete a book by ID
+DELETE {{Reservations.Api_HostAddress}}/api/v1/books/1
+Accept: application/json
+
+###
+# Reserve a book with a comment
+POST {{Reservations.Api_HostAddress}}/api/v1/books/1/reserve/This%20is%20a%20comment
+Accept: application/json
+
+###
+# Get all reserved books
+GET {{Reservations.Api_HostAddress}}/api/v1/books/reserved-books
+Accept: application/json
+
+###
+# Remove reservation from a book
+POST {{Reservations.Api_HostAddress}}/api/v1/books/1/remove-reservation
+Accept: application/json
+
+###
+# Get all available books
+GET {{Reservations.Api_HostAddress}}/api/v1/books/available-books
+Accept: application/json
+
+###
+# Get reservation history of a book by ID
+GET {{Reservations.Api_HostAddress}}/api/v1/books/1/history
+Accept: application/json
