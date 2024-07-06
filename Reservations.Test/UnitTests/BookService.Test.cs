@@ -64,12 +64,11 @@ public class BookServiceTest : IDisposable
     public async Task GetAllAsync_WithNoBooks_ReturnsEmptyList()
     {
         // Act
-        var result = await _bookService.GetAllAsync();
+        var result = (await _bookService.GetAllAsync()).ToArray();
 
         // Assert
-        var bookDtos = result as BookDto[] ?? result.ToArray();
-        bookDtos.Should().NotBeNull();
-        bookDtos.Should().HaveCount(0);
+        result.Should().NotBeNull();
+        result.Should().HaveCount(0);
     }
 
 
@@ -82,13 +81,12 @@ public class BookServiceTest : IDisposable
         await _bookService.CreateAsync(createdBook);
 
         // Act
-        var result = await _bookService.GetAllAsync();
+        var result = (await _bookService.GetAllAsync()).ToArray();
 
         // Assert
-        var bookDto = result as BookDto[] ?? result.ToArray();
-        bookDto.Should().NotBeEmpty();
-        bookDto.Should().NotBeNull();
-        bookDto.Should().HaveCount(1);
+        result.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
     }
 
     // 3. GetByIdAsync
@@ -313,12 +311,11 @@ public class BookServiceTest : IDisposable
         await _bookService.ReserveBookAsync(firstBook.Id, "Comment: reserving book");
 
         // Act
-        var result = await _bookService.GetAvailableBooksAsync();
+        var result = (await _bookService.GetAvailableBooksAsync()).ToArray();
 
         // Assert
-        IEnumerable<BookDto> bookDtos = result as BookDto[] ?? result.ToArray();
-        bookDtos.Should().NotBeNull();
-        bookDtos.Should().HaveCount(2);
+        result.Should().NotBeNull();
+        result.Should().HaveCount(2);
     }
 
     // 10 Get books history
