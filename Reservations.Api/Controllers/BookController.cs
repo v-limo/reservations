@@ -25,7 +25,7 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<BookDto>> GetBooks()
+    public async Task<IList<BookDto>> GetBooks()
     {
         return await bookService.GetAllAsync();
     }
@@ -96,7 +96,7 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("reserved-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<BookDto>> GetReservedBooks()
+    public async Task<IList<BookDto>> GetReservedBooks()
     {
         return await bookService.GetReservedBooksAsync();
     }
@@ -122,7 +122,7 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("available-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<BookDto>> GetAvailableBooks()
+    public async Task<IList<BookDto>> GetAvailableBooks()
     {
         return await bookService.GetAvailableBooksAsync();
     }
@@ -130,7 +130,7 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("{bookId:int}/history")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
+    public async Task<IList<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
     {
         return await bookService.GetSingleBookHistoryAsync(bookId);
     }

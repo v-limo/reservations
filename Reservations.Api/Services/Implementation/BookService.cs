@@ -6,12 +6,12 @@ public class BookService(
     ILogger<BookService> logger
 ) : IBookService
 {
-    public async Task<IEnumerable<BookDto>> GetAllAsync()
+    public async Task<IList<BookDto>> GetAllAsync()
     {
         try
         {
             var books = await dbContext.Books.ToListAsync();
-            return mapper.Map<IEnumerable<BookDto>>(books);
+            return mapper.Map<IList<BookDto>>(books);
         }
         catch (Exception ex)
         {
@@ -155,12 +155,12 @@ public class BookService(
         }
     }
 
-    public async Task<IEnumerable<BookDto>> GetReservedBooksAsync()
+    public async Task<IList<BookDto>> GetReservedBooksAsync()
     {
         try
         {
             var books = await dbContext.Books.Where(x => x.IsReserved).ToListAsync();
-            return mapper.Map<IEnumerable<BookDto>>(books);
+            return mapper.Map<IList<BookDto>>(books);
         }
         catch (Exception ex)
         {
@@ -169,12 +169,12 @@ public class BookService(
         }
     }
 
-    public async Task<IEnumerable<BookDto>> GetAvailableBooksAsync()
+    public async Task<IList<BookDto>> GetAvailableBooksAsync()
     {
         try
         {
             var availableBooks = await dbContext.Books.Where(x => !x.IsReserved).ToListAsync();
-            return mapper.Map<IEnumerable<BookDto>>(availableBooks);
+            return mapper.Map<IList<BookDto>>(availableBooks);
         }
         catch (Exception ex)
         {
@@ -183,12 +183,12 @@ public class BookService(
         }
     }
 
-    public async Task<IEnumerable<ReservationHistoryDto>> GetSingleBookHistoryAsync(int bookId)
+    public async Task<IList<ReservationHistoryDto>> GetSingleBookHistoryAsync(int bookId)
     {
         try
         {
             var histories = await dbContext.ReservationHistory.Where(x => x.BookId == bookId).ToListAsync();
-            return mapper.Map<IEnumerable<ReservationHistoryDto>>(histories);
+            return mapper.Map<IList<ReservationHistoryDto>>(histories);
         }
         catch (Exception ex)
         {

@@ -5,7 +5,7 @@ public interface IBaseService<TDto, in TCreateDto, in TUpdateDto>
     where TCreateDto : class
     where TUpdateDto : class
 {
-    Task<IEnumerable<TDto>> GetAllAsync();
+    Task<IList<TDto>> GetAllAsync();
     Task<TDto> GetByIdAsync(int id);
     Task<TDto> CreateAsync(TCreateDto createDto);
     Task<TDto?> UpdateAsync(int id, TUpdateDto updateDto);
