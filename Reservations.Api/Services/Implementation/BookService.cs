@@ -20,12 +20,12 @@ public class BookService(
         }
     }
 
-    public async Task<BookDto> GetByIdAsync(int id)
+    public async Task<BookDto?> GetByIdAsync(int id)
     {
         try
         {
             var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
-            return mapper.Map<BookDto>(book);
+            return book is null ? null : mapper.Map<BookDto>(book);
         }
         catch (Exception ex)
         {

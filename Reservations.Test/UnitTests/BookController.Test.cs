@@ -87,16 +87,16 @@ public class BookControllerTests
         // Arrange
         const int invalidId = 10;
         BookDto? book = null;
-        _mockBookService.Setup(x => x.GetByIdAsync(invalidId))!.ReturnsAsync(book);
+        _mockBookService.Setup(x => x.GetByIdAsync(invalidId)).ReturnsAsync(book);
 
         // Act
         var result = await _bookController.GetBook(invalidId);
 
         // Assert
         result.Result?.Should().BeOfType<
-            NotFoundObjectResult
+            NotFoundResult
         >();
-        result.Result?.As<NotFoundObjectResult>()?.StatusCode.Should().Be(404);
+        result.Result?.As<NotFoundResult>()?.StatusCode.Should().Be(404);
     }
 
     [Fact]

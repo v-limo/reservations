@@ -25,21 +25,22 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IList<BookDto>> GetBooks()
+    public Task<IList<BookDto>> GetBooks()
     {
-        return await bookService.GetAllAsync();
+        return bookService.GetAllAsync();
     }
 
 
     [HttpGet("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<BookDto>> GetBook(int bookId)
+    public async Task<ActionResult<BookDto?>> GetBook(int bookId)
     {
         var book = await bookService.GetByIdAsync(bookId);
-        return book;
-    }
+        if (book == null) return NotFound();
 
+        return Ok(book);
+    }
 
     [HttpPut("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -96,9 +97,9 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("reserved-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IList<BookDto>> GetReservedBooks()
+    public Task<IList<BookDto>> GetReservedBooks()
     {
-        return await bookService.GetReservedBooksAsync();
+        return bookService.GetReservedBooksAsync();
     }
 
 
@@ -122,16 +123,16 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet("available-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IList<BookDto>> GetAvailableBooks()
+    public Task<IList<BookDto>> GetAvailableBooks()
     {
-        return await bookService.GetAvailableBooksAsync();
+        return bookService.GetAvailableBooksAsync();
     }
 
 
     [HttpGet("{bookId:int}/history")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IList<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
+    public Task<IList<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
     {
-        return await bookService.GetSingleBookHistoryAsync(bookId);
+        return bookService.GetSingleBookHistoryAsync(bookId);
     }
 }
