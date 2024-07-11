@@ -35,4 +35,22 @@ public static class WebApplicationExtensions
             // throw;  // TODO: this create an endless loop when combined with global error handling
         }
     }
+
+    public static void AddTestEndpoint(this WebApplication app)
+    {
+        app.MapGet("/", context =>
+        {
+            var rootApiMessage = new
+            {
+                Message = "Yeey! The app is up and running smoothly!",
+                PossibleEndpoints = (string[])
+                [
+                    "http://localhost:5099/swagger/index.html", "http://localhost:5099/api/v1/books",
+                    "http://<deployed-link>/api/v1/books"
+                ],
+                MoreInfo = "Read the app docs of docker image info for more infomation"
+            };
+            return context.Response.WriteAsJsonAsync(rootApiMessage);
+        });
+    }
 }
