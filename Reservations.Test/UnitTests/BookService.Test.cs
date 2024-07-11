@@ -1,7 +1,7 @@
 namespace Reservations.Test.UnitTests;
 
 /// <summary>
-/// Unit test for book service
+///     Unit test for book service
 /// </summary>
 public class BookServiceTest : IDisposable
 {

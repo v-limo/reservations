@@ -128,7 +128,7 @@ public class BookService(
         try
         {
             var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == bookId);
-            if (book == null || !book.IsReserved)
+            if (book is not { IsReserved: true })
                 return false;
 
             book.IsReserved = false;

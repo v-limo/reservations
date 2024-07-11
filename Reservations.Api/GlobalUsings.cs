@@ -9,7 +9,6 @@ global using System.Text.Json;
 global using Reservations.Api.Middleware;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.OpenApi.Models;
-global using Reservations.Api;
 global using Reservations.Api.Extensions;
 global using Reservations.Api.Profiles;
 global using Reservations.Api.Services.Implementation;

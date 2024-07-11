@@ -25,9 +25,10 @@ public class BookController(IBookService bookService) : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public Task<IList<BookDto>> GetBooks()
+    public async Task<ActionResult<List<BookDto>>> GetBooks()
     {
-        return bookService.GetAllAsync();
+        var books = await bookService.GetAllAsync();
+        return Ok(books);
     }
 
 
@@ -63,7 +64,7 @@ public class BookController(IBookService bookService) : ControllerBase
             return NotFound(
                 new { Message = "Book not found so cannot update", BookId = bookId }
             );
-        return book;
+        return Ok(book);
     }
 
 
@@ -91,15 +92,15 @@ public class BookController(IBookService bookService) : ControllerBase
             return NotFound(
                 new { Message = "Book not found (or already reserved) so cannot reserve", BookId = bookId }
             );
-        return book;
+        return Ok(book);
     }
 
 
     [HttpGet("reserved-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public Task<IList<BookDto>> GetReservedBooks()
+    public async Task<ActionResult<IList<BookDto>>> GetReservedBooks()
     {
-        return bookService.GetReservedBooksAsync();
+        return Ok(await bookService.GetReservedBooksAsync());
     }
 
 
@@ -117,22 +118,22 @@ public class BookController(IBookService bookService) : ControllerBase
                     BookId = bookId
                 }
             );
-        return result;
+        return Ok(result);
     }
 
 
     [HttpGet("available-books")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public Task<IList<BookDto>> GetAvailableBooks()
+    public async Task<ActionResult<IList<BookDto>>> GetAvailableBooks()
     {
-        return bookService.GetAvailableBooksAsync();
+        return Ok(await bookService.GetAvailableBooksAsync());
     }
 
 
     [HttpGet("{bookId:int}/history")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public Task<IList<ReservationHistoryDto>> GetSingleBookHistory(int bookId)
+    public async Task<ActionResult<IList<ReservationHistoryDto>>> GetSingleBookHistory(int bookId)
     {
-        return bookService.GetSingleBookHistoryAsync(bookId);
+        return Ok(await bookService.GetSingleBookHistoryAsync(bookId));
     }
 }
