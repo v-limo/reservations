@@ -4,7 +4,7 @@ The API is designed to manage book reservations, providing an endpoint for all C
 
 ## Features
 
-The API is documented wth Swagger UI. it has the following endpoints
+The API is documented with Swagger UI. It has the following endpoints
 
 
 - GET    `api/v1/books`      - Get all books
@@ -22,20 +22,21 @@ The API is documented wth Swagger UI. it has the following endpoints
 ## Prerequisites
 
 - [.NET 8.0.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and above
-- [Docker](https://www.docker.com/) (Optional but reccommended)
+- [Docker](https://www.docker.com/) (Optional but recommended)
 
 ## Getting Started
 
 ### 1. Locally with Docker - Recommended
 
 ```bash
-docker run -p 5165:5165 --name webapi  limov/reservationsapi
+docker run -p 5099:5099 --name webapi  limov/reservationsapi
 ```
 
-The above command will pull the [image](https://hub.docker.com/r/limov/reservationsapi) from docker hub and run it on port 5165.
-  - API: http://localhost:5165
-  - Swagger UI: http://localhost:5165/swagger/index.html
 
+### 2. Running with Kubernetes
+
+- Requires Kubernetes and Minikube installed
+- Requires Docker to build the project image
 
 ### 2. Running without Docker
 
@@ -55,6 +56,7 @@ dotnet run --project Reservations.API/Reservations.API.csproj
 # Navigate to the port running the project:
 http://localhost:NNNN/swagger/index.html
 ```
+
 
 ## Running the tests
 

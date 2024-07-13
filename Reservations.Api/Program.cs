@@ -1,6 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
-var sqliteConnection = builder.Configuration.GetConnectionString("SqliteConnection") ?? string.Empty;
+var sqliteConnection =
+    builder.Configuration.GetConnectionString("SqliteConnection") ?? "Data Source=reservations.db";
 
 builder.Services.ConfigureSqliteDatabase(sqliteConnection);
 builder.Services.ConfigureMiddlewareAndServices();

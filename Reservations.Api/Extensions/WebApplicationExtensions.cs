@@ -42,13 +42,15 @@ public static class WebApplicationExtensions
         {
             var rootApiMessage = new
             {
-                Message = "Yeey! The app is up and running smoothly!",
+                Message = "Yey! The app is up and running smoothly!",
+                Host = Environment.MachineName,
+                Environment.ProcessId,
                 PossibleEndpoints = (string[])
                 [
                     "http://localhost:5099/swagger/index.html", "http://localhost:5099/api/v1/books",
-                    "http://<deployed-link>/api/v1/books"
+                    "http://<deployed-link>/api/v1/books", "http://<node/load-balancer-port>/api/v1/books"
                 ],
-                MoreInfo = "Read the app docs of docker image info for more infomation"
+                MoreInfo = "Read the app docs of docker image info for more information"
             };
             return context.Response.WriteAsJsonAsync(rootApiMessage);
         });
