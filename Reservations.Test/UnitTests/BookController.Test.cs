@@ -64,7 +64,6 @@ public class BookControllerTests
         okResult.StatusCode.Should().Be(Status200OK);
     }
 
-
     // 3. GetByIdAsync
     [Fact]
     public async Task GetBookById_WithInvalidId_ReturnsNotFound()
@@ -83,7 +82,7 @@ public class BookControllerTests
         >();
         result.Result?.As<NotFoundResult>()?.StatusCode.Should().Be(Status404NotFound);
     }
-
+    
     [Fact]
     public async Task GetBookById_WithValidId_ReturnsBook()
     {
@@ -97,7 +96,6 @@ public class BookControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>();
     }
-
 
     // 4. UpdateAsync
     [Fact]
@@ -120,7 +118,7 @@ public class BookControllerTests
         // Assert
         result.Result?.Should().BeOfType<BadRequestObjectResult>().Which.StatusCode.Should<int>().Be(400);
     }
-
+    
     [Fact]
     public async Task UpdateBook_WithValidId_ReturnsUpdatedBook()
     {
@@ -144,7 +142,7 @@ public class BookControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>().Which.StatusCode.Should().Be(200);
     }
-
+    
     [Fact]
     public async Task UpdateBook_WithInvalidData_ReturnsBadRequest()
     {
@@ -165,7 +163,7 @@ public class BookControllerTests
         // Assert
         result.Result?.Should().BeOfType<BadRequestObjectResult>();
     }
-
+    
     [Fact]
     public async Task UpdateBook_WithValidData_ReturnsUpdatedBook()
     {
@@ -190,7 +188,6 @@ public class BookControllerTests
         // Assert
         result.Result.Should().BeOfType<OkObjectResult>().Which.StatusCode.Should().Be(200);
     }
-
 
     // 5. DeleteAsync
     [Fact]
@@ -223,7 +220,6 @@ public class BookControllerTests
             ?.StatusCode.Should().Be(204);
     }
 
-
     // 6. ReserveAsync
     [Fact]
     public async Task ReserveBook_WithInvalidId_ReturnsNotFound()
@@ -243,7 +239,6 @@ public class BookControllerTests
         // Assert
         result.Result.Should().BeOfType<NotFoundObjectResult>().Which.StatusCode.Should().Be(404);
     }
-
 
     [Fact]
     public async Task ReserveBook_WithValidIdAndComment_ReturnsReserveBook()
@@ -271,7 +266,6 @@ public class BookControllerTests
         okResult.StatusCode.Should().Be(Status200OK);
     }
 
-
     //7. RemoveReservationAsync
     [Fact]
     public async Task RemoveReservation_WithInvalidId_ReturnsNotFound()
@@ -287,7 +281,7 @@ public class BookControllerTests
         // Assert
         result.Result?.Should().BeOfType<NotFoundObjectResult>().Which.StatusCode.Should<int>().Be(404);
     }
-
+    
     [Fact]
     public async Task RemoveReservation_WithValidId_ReturnsTrue()
     {
@@ -323,7 +317,6 @@ public class BookControllerTests
         returnedBooks.Should().NotBeNull();
     }
 
-
     [Fact]
     public async Task GetAllReservedBooks_WithBooks_ReturnsAllBooks()
     {
@@ -340,7 +333,6 @@ public class BookControllerTests
         var returnedBooks = okResult.Value.Should().BeAssignableTo<List<BookDto>>().Subject;
         returnedBooks.Should().NotBeNull();
     }
-
 
     // 9. GetAllAvailableAsync
     [Fact]
@@ -360,7 +352,6 @@ public class BookControllerTests
         (okResult?.Value as List<BookDto>)?.Count.Should().Be(0);
     }
 
-
     [Fact]
     public async Task GetAllAvailableBooks_WithBooks_ReturnsAllBooks()
     {
@@ -378,7 +369,7 @@ public class BookControllerTests
         returnedBooks.Should().BeEquivalentTo(availableBooks);
         okResult.StatusCode.Should().Be(Status200OK);
     }
-
+    
     //10. GetHistoryAsync
     [Fact]
     public async Task GetBooksHistory_WithNoBooks_ReturnsEmptyList()
@@ -395,7 +386,7 @@ public class BookControllerTests
         result?.StatusCode.Should().Be(200);
         result?.Value.Should().BeAssignableTo<IList<ReservationHistoryDto>>();
     }
-
+    
     // 10.2 Get books history with books
     [Fact]
     public async Task GetBooksHistory_WithBooks_ReturnsAllBooks()
@@ -413,8 +404,7 @@ public class BookControllerTests
         result.Should().NotBeNull();
         result?.StatusCode.Should().Be(200);
     }
-
-
+    
     private static List<BookDto> GetBooksDto()
     {
         List<BookDto> books =

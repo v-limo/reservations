@@ -22,7 +22,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return CreatedAtAction(nameof(GetBook), new { bookId = book.Id }, book);
     }
 
-
+    
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<List<BookDto>>> GetBooks()
@@ -31,7 +31,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok(books);
     }
 
-
+    
     [HttpGet("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -43,6 +43,7 @@ public class BookController(IBookService bookService) : ControllerBase
         return Ok(book);
     }
 
+    
     [HttpPut("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -66,8 +67,8 @@ public class BookController(IBookService bookService) : ControllerBase
             );
         return Ok(book);
     }
-
-
+    
+    
     [HttpDelete("{bookId:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

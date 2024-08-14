@@ -1,5 +1,11 @@
 namespace Reservations.Api.Extensions;
 
+public abstract class PaginationParams
+{
+    public int PageNumber { get; set; } = 1;
+    public int PageSize { get; set; } = 10;
+}
+
 public static class ServiceCollectionExtensions
 {
     public static void ConfigureSqliteDatabase(this IServiceCollection serviceCollection, string connectionString)
@@ -49,5 +55,21 @@ public static class ServiceCollectionExtensions
                 });
             }
         );
+    }
+
+    public static IQueryable<T> Paging<T>(this IQueryable<T> query, PaginationParams paginationParams)
+    {
+        return query.Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+            .Take(paginationParams.PageSize);
+    }
+
+    public static IQueryable<T> Filtering<T>(this IQueryable<T> query, string search)
+    {
+        return query.Where(arg => true);
+    }
+
+    public static IQueryable<T> Searching<T>(this IQueryable<T> query, string search)
+    {
+        return query;
     }
 }

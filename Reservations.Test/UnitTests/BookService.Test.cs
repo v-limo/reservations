@@ -120,8 +120,8 @@ public class BookServiceTest : IDisposable
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(bookDto.Id);
-        result.Title.Should().Be(bookDto.Title);
+        result?.Id.Should().Be(bookDto.Id);
+        result?.Title.Should().Be(bookDto.Title);
     }
 
 
