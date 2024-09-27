@@ -11,6 +11,7 @@ builder.Services.ConfigureCors();
 var app = builder.Build();
 
 await app.ApplyDatabaseMigrations();
+
 app.AddTestEndpoint(); // add a test endpoint to the root to easily test with docker or k8s
 
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())

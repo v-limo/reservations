@@ -10,7 +10,7 @@ public class BookService(
     {
         try
         {
-            var books = await dbContext.Books.ToListAsync();
+            var books = await dbContext.Books.AsNoTracking().ToListAsync();
             return mapper.Map<IList<BookDto>>(books);
         }
         catch (Exception ex)
@@ -24,7 +24,7 @@ public class BookService(
     {
         try
         {
-            var book = await dbContext.Books.FirstOrDefaultAsync(x => x.Id == id);
+            var book = await dbContext.Books.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             return book is null ? null : mapper.Map<BookDto>(book);
         }
         catch (Exception ex)
